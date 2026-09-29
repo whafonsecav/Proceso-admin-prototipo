@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recoevo Analógico · Prototipo 3D</title>
+<meta name="description" content="Prototipo 3D interactivo del triturador analógico a pedal Recoevo: mecanismos con física real, guía paso a paso, despiece y manual de construcción.">
+<style>
+:root{--bg:#dfe2dc;--panel:rgba(18,24,21,.88);--line:rgba(255,255,255,.09);--txt:#e8ece9;--mute:#9aa7a0;--acc:#63b870;--acc2:#8fd49a;--warn:#f0b43c;--bad:#e5533d}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--txt);-webkit-user-select:none;user-select:none}
+#c{position:fixed;inset:0;display:block;touch-action:none}
+.panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 12px 40px rgba(0,0,0,.28);z-index:10}
+#left{top:12px;left:12px;width:330px;max-height:calc(100% - 230px);display:flex;flex-direction:column;overflow:hidden}
+#left .head{padding:12px 14px 8px}
+h1{font-size:15px;margin:0 0 2px;letter-spacing:.2px}h1 b{color:var(--acc2)}
+.sub{font-size:11.5px;color:var(--mute);line-height:1.35}
+.tabs{display:flex;gap:4px;margin-top:10px;background:#111713;border-radius:10px;padding:3px}
+.tabs button{flex:1;border:0;background:transparent;color:#aab5ae;padding:7px 4px;border-radius:8px;font-size:12.5px}
+.tabs button.on{background:#2f6b3a;color:#fff}
+.body{overflow:auto;padding:4px 14px 14px;flex:1}
+.body::-webkit-scrollbar{width:6px}.body::-webkit-scrollbar-thumb{background:#3a463f;border-radius:6px}
+h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mute);margin:12px 0 7px;font-weight:600}
+button{font:inherit;font-size:12.5px;font-weight:600;color:var(--txt);background:#26302b;border:1px solid #37433c;border-radius:9px;padding:8px 8px;cursor:pointer;transition:background .15s,border-color .15s,transform .05s;text-align:center;line-height:1.2}
+button:hover{background:#2f3b35;border-color:#4d5d53}button:active{transform:translateY(1px)}
+button.pri{background:#2f6b3a;border-color:#3f8a4c}button.pri:hover{background:#387d45}
+button.on{background:#7a5a17;border-color:#b58624}
+button.hold{background:#3b3322;border-color:#6f5a2c}button.hold.pressed{background:#b58624;color:#1b1406}
+button.dis{opacity:.45}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.wide{grid-column:1/-1}
+kbd{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;background:#111713;border:1px solid #3a463f;border-bottom-width:2px;border-radius:4px;padding:0 4px;color:#cbd6cf;margin-left:3px}
+/* guía */
+.gstep{font-size:11px;color:var(--acc2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.gtitle{font-size:17px;font-weight:700;margin:4px 0 6px;line-height:1.25}
+.gtext{font-size:13px;line-height:1.5;color:#d3dbd6}
+.gtext b{color:#fff}
+.gwhy{margin-top:10px;font-size:12px;line-height:1.45;color:#aebbb3;background:rgba(255,255,255,.04);border-left:3px solid var(--acc);padding:8px 10px;border-radius:6px}
+.gact{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.gact button{flex:1 1 45%}
+.gnav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:6px}
+.gnav button{padding:6px 10px;font-size:12px}
+.dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;flex:1}.dots i{width:7px;height:7px;border-radius:50%;background:#3a463f}.dots i.d{background:#4d8f59}.dots i.n{background:var(--acc2);box-shadow:0 0 0 3px rgba(143,212,154,.25)}
+.gok{color:#8fe19b;font-weight:700;font-size:13px;margin-top:8px;display:none}
+.prog{height:7px;border-radius:5px;background:#2a332e;overflow:hidden;margin-top:10px;display:none}.prog b{display:block;height:100%;width:0;background:linear-gradient(90deg,#d6a72c,#63b870);transition:width .2s}
+/* manual */
+details{border:1px solid var(--line);border-radius:10px;margin:7px 0;background:rgba(255,255,255,.02)}
+summary{cursor:pointer;padding:9px 11px;font-size:13px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";color:var(--mute)}details[open] summary::after{content:"–"}
+details .in{padding:0 11px 11px;font-size:12.3px;line-height:1.5;color:#cfd8d2}
+details .in p{margin:6px 0}details .in ol,details .in ul{margin:6px 0;padding-left:18px}
+details .in button{margin-top:6px;padding:5px 10px;font-size:11.5px}
+table.bom{width:100%;border-collapse:collapse;font-size:11.2px}table.bom td,table.bom th{border-bottom:1px solid var(--line);padding:4px 3px;text-align:left;vertical-align:top}table.bom th{color:var(--mute);font-weight:600}
+/* estado */
+#right{top:12px;right:12px;width:262px;padding:10px 13px}
+#right .ttl{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);cursor:pointer;margin-bottom:6px}
+.st{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12.2px;align-items:center}
+.st .k{color:var(--mute)}.st .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.p-ok{background:rgba(95,196,110,.18);color:#8fe19b}.p-bad{background:rgba(229,83,61,.2);color:#ff9d8c}.p-warn{background:rgba(240,180,60,.2);color:#ffd27a}.p-mid{background:rgba(255,255,255,.08);color:#dfe6e1}
+.bar{height:9px;border-radius:6px;background:linear-gradient(90deg,#3f9a4c 0 58.3%,#d6a72c 58.3% 85%,#d2412f 85% 100%);position:relative;margin:8px 0 2px}
+.bar i{position:absolute;top:-3px;width:3px;height:15px;background:#fff;border-radius:2px;box-shadow:0 0 0 1px #000a;transform:translateX(-50%)}
+.meter{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--mute)}.meter .m{flex:1;height:6px;border-radius:4px;background:#2a332e;overflow:hidden}.meter .m b{display:block;height:100%;width:0;background:var(--acc)}
+#right.min .st,#right.min .xtra{display:none}
+/* barra inferior siempre visible */
+#bar{left:50%;transform:translateX(-50%);bottom:12px;display:flex;align-items:center;gap:14px;padding:9px 14px;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center}
+.sl{display:flex;flex-direction:column;gap:2px;min-width:170px}
+.sl label{font-size:11px;color:var(--mute);display:flex;justify-content:space-between}.sl label b{color:#e8ece9}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.cams{display:flex;gap:4px;flex-wrap:wrap}.cams button{font-size:11.5px;padding:6px 8px}
+.tg{display:flex;gap:4px}.tg button{font-size:11.5px;padding:6px 8px}
+#tip{position:fixed;z-index:30;pointer-events:none;max-width:310px;background:rgba(10,14,12,.95);border:1px solid rgba(99,184,112,.5);border-radius:10px;padding:10px 12px;font-size:12.3px;line-height:1.45;color:#dbe3de;display:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#tip b{display:block;color:var(--acc2);font-size:13px;margin-bottom:3px}#tip .mat{display:block;color:#b8c4bc;font-size:11px;margin-bottom:5px;font-style:italic}#tip .act{display:block;margin-top:6px;color:#ffd27a;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+#toasts{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+.toast{background:rgba(14,18,16,.94);border:1px solid #3c4a42;border-left:4px solid var(--acc);color:#e8ece9;border-radius:9px;padding:9px 14px;font-size:13px;max-width:520px;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:tin .2s ease-out}
+.toast.warn{border-left-color:var(--warn)}.toast.bad{border-left-color:var(--bad)}
+@keyframes tin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
+#dims{left:12px;bottom:12px;padding:9px 12px;font-size:11.5px;line-height:1.5;width:250px}#dims b{color:var(--acc2);font-size:11px;letter-spacing:1px;text-transform:uppercase}#dims .r{display:flex;justify-content:space-between;gap:8px}#dims .r span:first-child{color:var(--mute)}#dims .r span:last-child{font-weight:600;text-align:right}
+#detail{position:absolute;right:12px;bottom:84px;width:300px;padding:12px 14px;display:none}
+#detail b{color:var(--acc2);font-size:14px}#detail .mat{font-size:11.5px;color:#b8c4bc;font-style:italic;margin:3px 0 6px}#detail p{font-size:12.5px;line-height:1.45;margin:0;color:#d3dbd6}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;color:#2c3a31;font-size:14px;transition:opacity .5s}
+#loading .sp{width:38px;height:38px;border:4px solid #b9c2bb;border-top-color:#2f6b3a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ptinfo{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 14px;font-size:12.5px;display:none}
+#mbar,.mclose,#bMore{display:none}
+.phead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+@media (max-width:900px){
+  #mbar{display:flex;position:fixed;top:8px;left:8px;right:8px;z-index:30;gap:6px;justify-content:center}
+  #mbar button{flex:1;font-size:12.5px;padding:8px 6px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:10px}
+  #mbar button.on{background:#2f6b3a;border-color:#3f8a4c}
+  #left,#right,#dims{display:none}
+  #left.open,#right.open,#dims.open{display:flex;flex-direction:column;position:fixed;top:52px;left:8px;right:8px;width:auto;bottom:auto;max-height:calc(100% - 52px - 96px);overflow:auto;z-index:25}
+  #right.open,#dims.open{display:block}
+  #left .sub{display:none}#left .head{padding:9px 12px 6px}
+  .mclose{display:inline-block;flex:0 0 auto;padding:3px 9px;font-size:13px;line-height:1.2}
+  #right .st{grid-template-columns:auto 1fr;font-size:12px}#right .xtra,#right .hide-m{display:revert}#right.min .st,#right.min .xtra{display:revert}
+  #right .ttl{cursor:default}#rTg{display:none}
+  #bar{left:8px;right:8px;transform:none;bottom:8px;gap:6px 8px;padding:8px 10px;justify-content:space-between}
+  #bar .cams,#bar .tg{display:none;width:100%}#bar.more .cams,#bar.more .tg{display:flex}
+  .cams{flex-wrap:wrap}.cams button{flex:1 1 30%}.tg button{flex:1}
+  .sl{min-width:0;flex:1 1 38%}#bMore{display:block;flex:0 0 auto;padding:7px 9px;font-size:12px}
+  #detail{left:8px;right:8px;width:auto;bottom:auto;top:52px;max-height:45%;overflow:auto;z-index:26}
+  #toasts{top:56px;width:calc(100% - 16px)}.toast{font-size:12px;padding:7px 10px}
+  #tip{max-width:78vw;font-size:11.5px}
+  .gtitle{font-size:15px}.gtext{font-size:12.3px}
+}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="loading"><div><div class="sp"></div>Armando el prototipo y sus mecanismos…</div></div>
+<canvas id="c"></canvas>
+
+<div id="mbar"><button data-open="left">☰ Menú</button><button data-open="right">Estado</button><button data-open="dims">Medidas</button></div>
+<div id="left" class="panel">
+  <div class="head">
+    <div class="phead"><h1><b>RECOEVO</b> · Triturador analógico a pedal</h1><button class="mclose" data-close="left">✕</button></div>
+    <div class="sub">Sin motor ni electrónica · 38 × 40 × 68 cm · cajón de 20 L. Todo se mueve con física real: pesos, resortes, inercia y choques.</div>
+    <div class="tabs"><button data-mode="manual" class="on">Manual</button><button data-mode="free">Libre</button></div>
+  </div>
+  <div class="body" id="pFree" style="display:none">
+    <h2>Tapa superior</h2>
+    <div class="grid">
+      <button id="bLatch">Gancho <kbd>G</kbd></button>
+      <button id="bLid">Tapa <kbd>T</kbd></button>
+      <button id="bWaste" class="pri wide">Echar residuos del día · 460 g <kbd>R</kbd></button>
+    </div>
+    <h2>Pedales</h2>
+    <div class="grid">
+      <button id="bPedR" class="hold">Pedal derecho<br><small>mantener · triturar</small> <kbd>Espacio</kbd></button>
+      <button id="bPedL" class="hold">Pedal izquierdo<br><small>mantener · aserrín</small> <kbd>C</kbd></button>
+      <button id="bAuto" class="wide">Pedaleo rítmico automático <kbd>P</kbd></button>
+    </div>
+    <h2>Frente, cajón y bolsa</h2>
+    <div class="grid">
+      <button id="bDoor">Puerta frontal <kbd>F</kbd></button>
+      <button id="bDrawer">Cajón <kbd>D</kbd></button>
+      <button id="bBag" class="wide">Sacar la bolsa llena</button>
+      <button id="bKey" class="wide" title="El operario de la ruta puede abrir el frente antes de tiempo, por ejemplo si se rompió la bolsa">Llave del operario (abre sin esperar el rojo)</button>
+    </div>
+    <h2>Simulación</h2>
+    <div class="grid"><button id="bDays">+ 5 días de uso (2,3 kg)</button><button id="bReset">Reiniciar</button></div>
+    <p class="sub" style="margin-top:10px">También puedes <b>arrastrar</b> las piezas con el mouse (tapa, gancho, puerta, cajón, bolsa), <b>mantener presionados</b> los pedales o hacer <b>doble clic</b> para abrir y cerrar.</p>
+  </div>
+  <div class="body" id="pManual"></div>
+</div>
+
+<div id="right" class="panel">
+  <div class="ttl" id="rTtl"><span>Estado en vivo</span><span id="rTg">–</span><button class="mclose" data-close="right">✕</button></div>
+  <div class="st">
+    <span class="k">Tapa</span><span class="v" id="oLid">—</span>
+    <span class="k">Empaque EPDM</span><span class="v" id="oSeal">—</span>
+    <span class="k">Seguro del pedal</span><span class="v" id="oLock">—</span>
+    <span class="k hide-m">Pedal derecho</span><span class="v hide-m" id="oPedR">—</span>
+    <span class="k hide-m">Volante</span><span class="v hide-m" id="oFly">—</span>
+    <span class="k">Rodillos</span><span class="v" id="oRoll">—</span>
+    <span class="k hide-m">Residuo por moler</span><span class="v hide-m" id="oRaw">—</span>
+    <span class="k">Aserrín en depósito</span><span class="v" id="oGate">—</span>
+    <span class="k hide-m">Montón cubierto</span><span class="v hide-m" id="oOnGate">—</span>
+    <span class="k">Cajón</span><span class="v" id="oBin">—</span>
+    <span class="k">Puerta frontal</span><span class="v" id="oDoor">—</span>
+  </div>
+  <div class="xtra">
+    <div class="bar"><i id="oNeedle" style="left:0%"></i></div>
+    <div class="meter" style="justify-content:space-between"><span>0 kg</span><span>7</span><span>10,2 · rojo</span><span>12 kg</span></div>
+    <div class="meter" style="margin-top:8px"><span style="width:92px">Energía volante</span><div class="m"><b id="oE"></b></div></div>
+    <div class="meter" style="margin-top:5px"><span style="width:92px">Carga de molido</span><div class="m"><b id="oLoad" style="background:#d6a72c"></b></div></div>
+  </div>
+</div>
+
+<div id="bar" class="panel">
+  <div class="sl"><label for="sTrans">Traslucidez <b id="vTrans">45%</b></label><input type="range" id="sTrans" min="0" max="100" value="45"></div>
+  <div class="sl"><label for="sExp">Despiece (separar piezas) <b id="vExp">0%</b></label><input type="range" id="sExp" min="0" max="100" value="0"></div>
+  <button id="bMore">Vistas ▾</button>
+  <div class="cams">
+    <button data-cam="gen">General</button><button data-cam="front">Frente</button><button data-cam="mech">Transmisión</button><button data-cam="grind">Rodillos</button><button data-cam="scale">Báscula</button><button data-cam="drawer">Cajón</button>
+  </div>
+  <div class="tg"><button id="bOdor">Olor y sellos</button><button id="bSound" class="on">Sonido</button></div>
+</div>
+
+<div id="dims" class="panel"></div>
+<div id="detail" class="panel"></div>
+<div id="tip"></div>
+<div id="toasts"></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+// =====================================================================
+//  EJES: x = izquierda→derecha, y = altura, z = atrás→frente. Metros.
+//  Origen en el piso, centro de la huella del cuerpo (38 × 40 cm).
+// =====================================================================
+const TAU = Math.PI * 2, g = 9.81;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+
+const D = {
+  W: 0.38, DP: 0.40, H: 0.68, t: 0.003,
+  baseTop: 0.035, frameTop: 0.64, lidT: 0.04, boca: 0.22,
+  ch: { hx: 0.12, hz: 0.12, y0: 0.318, y1: 0.60 },          // cámara de inox (medio ancho interior)
+  roll: { y: 0.47, z: 0.029, rb: 0.036, rs: 0.021, rsh: 0.009, disc: 0.012, n: 9 },
+  gate: { y: 0.325, xh: 0.12, L: 0.12, hz: 0.118, th: 0.0012 },
+  dr: { w: 0.34, h: 0.20, d: 0.30, z0: -0.14, y0: 0.063, wall: 0.004 },
+  tray: { y: 0.057, k: 9810, m: 0.6 },                     // 4 resortes: k total 9,81 N/mm → 1 mm por kg
+  carter: { x0: 0.19, x1: 0.262 }, chanL: { x0: -0.234, x1: -0.19 },
+};
+// Transmisión (pedal derecho → cremallera → rueda libre → cadena → volante → reductor 1:5 → rodillos)
+const T = { pivZ: -0.15, pivY: 0.05, padZ: 0.25, armPad: 0.40, restH: 0.045, sMax: 0.055,
+  rPin: 0.012, RA: 0.04865, rB: 0.01659, rPB: 0.012, RC: 0.060, yA: 0.17, yB: 0.41, xR: 0.226, xL: -0.212 };
+T.zB = D.roll.z + Math.sqrt((T.RC + T.rPB) ** 2 - (D.roll.y - T.yB) ** 2);
+T.zA = T.zB; T.zRack = T.zA + T.rPin; T.armRack = T.zRack - T.pivZ;
+T.G = (T.armRack / T.armPad) / T.rPin * 3; // catalina 24 : piñón 8   // rad del volante por metro de pedal
+T.red = T.RC / T.rPB;                                    // reducción volante → rodillos (5:1)
+T.armCable = 0.30;                                       // pedal izquierdo: brazo del cable
+
+// ---------------------------------------------------------------------
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, innerWidth < 900 ? 1.5 : 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
+
+const scene = new THREE.Scene();
+const BG = new THREE.Color(0xe3e6e0);
+scene.background = BG;
+scene.fog = new THREE.Fog(0xdfe2dc, 3.5, 9);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.035).texture;
+scene.environmentIntensity = 0.75;
+
+const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.02, 30);
+camera.position.set(1.05, 0.82, 1.25);
+const controls = new OrbitControls(camera, canvas);
+controls.target.set(0.02, 0.33, 0.02);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+controls.minDistance = 0.12; controls.maxDistance = 7; controls.maxPolarAngle = Math.PI - 0.05; // se puede mirar por debajo: el piso solo se ve desde arriba
+controls.update();
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8d9389, 0.35));
+const key = new THREE.DirectionalLight(0xfff6ea, 2.3);
+key.position.set(1.3, 2.4, 1.7); key.castShadow = true;
+key.shadow.mapSize.set(innerWidth < 900 ? 1024 : 2048, innerWidth < 900 ? 1024 : 2048);
+Object.assign(key.shadow.camera, { left: -0.7, right: 0.7, top: 0.9, bottom: -0.5, near: 0.5, far: 6 });
+key.shadow.bias = -0.0003; key.shadow.normalBias = 0.015; key.shadow.radius = 5;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xdfe9ff, 0.55); fill.position.set(-1.8, 1.2, 0.6); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 0.7); rim.position.set(-0.6, 1.4, -2.0); scene.add(rim);
+
+const floor = new THREE.Mesh(new THREE.CircleGeometry(6, 64), new THREE.MeshStandardMaterial({ color: 0xd3d6cf, roughness: 0.92 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+{ // sombra de contacto suave bajo el equipo (oclusión ambiental aproximada)
+  const t = canvasTex(256, 256, (x, W, H) => { const gr = x.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, W / 2); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(0.55, 'rgba(0,0,0,.25)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = gr; x.fillRect(0, 0, W, H); });
+  const c = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 0.75), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }));
+  c.rotation.x = -Math.PI / 2; c.position.set(0.015, 0.0008, 0.02); scene.add(c);
+}
+
+// ---------------------------------------------------------------------
+//  Materiales PBR
+// ---------------------------------------------------------------------
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  return t;
+}
+function noiseTex(w, base, amp, repeat, grain = 1) {
+  return canvasTex(w, w, (x, W, H) => {
+    x.fillStyle = base; x.fillRect(0, 0, W, H);
+    const id = x.getImageData(0, 0, W, H), d = id.data;
+    for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - 0.5) * amp; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+    x.putImageData(id, 0, 0);
+    if (grain > 1) { x.globalAlpha = 0.25; x.drawImage(x.canvas, 0, 0, W / grain, H / grain, 0, 0, W, H); }
+  }, repeat);
+}
+// acero cepillado: vetas horizontales
+const brushed = canvasTex(256, 256, (x, W, H) => {
+  x.fillStyle = '#8a8a8a'; x.fillRect(0, 0, W, H);
+  for (let i = 0; i < 1400; i++) { const y = Math.random() * H, v = 110 + Math.random() * 60; x.strokeStyle = `rgba(${v},${v},${v},.35)`; x.beginPath(); x.moveTo(0, y); x.lineTo(W, y + (Math.random() - .5) * 2); x.stroke(); }
+}, [3, 3]);
+brushed.colorSpace = THREE.NoColorSpace;
+
+const wrinkle = canvasTex(256, 256, (x, W, H) => {
+  x.fillStyle = '#808080'; x.fillRect(0, 0, W, H);
+  for (let i = 0; i < 140; i++) { const y0 = Math.random() * H, a = (Math.random() - .5) * 0.5, l = 40 + Math.random() * 160, x0 = Math.random() * W; const gr = x.createLinearGradient(0, y0 - 6, 0, y0 + 6); const v = Math.random() < .5 ? 200 : 60; gr.addColorStop(0, 'rgba(128,128,128,0)'); gr.addColorStop(.5, `rgba(${v},${v},${v},.55)`); gr.addColorStop(1, 'rgba(128,128,128,0)'); x.fillStyle = gr; x.save(); x.translate(x0, y0); x.rotate(a); x.fillRect(-l / 2, -6, l, 12); x.restore(); }
+}, [2, 2]); wrinkle.colorSpace = THREE.NoColorSpace;
+const housingMats = [], clipMats = [];
+const M = {
+  pp: new THREE.MeshPhysicalMaterial({ color: 0x3f8c55, roughness: 0.44, clearcoat: 0.25, clearcoatRoughness: 0.55, side: THREE.DoubleSide, roughnessMap: noiseTex(128, '#bdbdbd', 30, [6, 6]) }),
+  ppGreen: new THREE.MeshPhysicalMaterial({ color: 0xd3e6c4, roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.4, side: THREE.DoubleSide }),
+  ppDark: new THREE.MeshPhysicalMaterial({ color: 0x252d28, roughness: 0.5, clearcoat: 0.2, side: THREE.DoubleSide }),
+  guard: new THREE.MeshPhysicalMaterial({ color: 0x3f8c55, roughness: 0.44, clearcoat: 0.25, side: THREE.DoubleSide }),
+  inox: new THREE.MeshStandardMaterial({ color: 0xcdd1d4, metalness: 1, roughness: 0.3, roughnessMap: brushed, side: THREE.DoubleSide }),
+  inoxLeaf: new THREE.MeshStandardMaterial({ color: 0xc3c8cc, metalness: 1, roughness: 0.34, roughnessMap: brushed, side: THREE.DoubleSide }),
+  inoxBlade: new THREE.MeshStandardMaterial({ color: 0xd9dcdf, metalness: 1, roughness: 0.22, roughnessMap: brushed }),
+  steel: new THREE.MeshStandardMaterial({ color: 0x6b7178, metalness: 0.95, roughness: 0.36 }),
+  blackSteel: new THREE.MeshStandardMaterial({ color: 0x2b2f33, metalness: 0.85, roughness: 0.42 }),
+  castIron: new THREE.MeshStandardMaterial({ color: 0x3a3f43, metalness: 0.75, roughness: 0.5, roughnessMap: noiseTex(128, '#9a9a9a', 60, [2, 2]) }),
+  zinc: new THREE.MeshStandardMaterial({ color: 0xc4c9cc, metalness: 1, roughness: 0.28 }),
+  springBlue: new THREE.MeshStandardMaterial({ color: 0x5c6f86, metalness: 0.9, roughness: 0.35 }),
+  brass: new THREE.MeshStandardMaterial({ color: 0xc9a14a, metalness: 1, roughness: 0.3 }),
+  chain: new THREE.MeshStandardMaterial({ color: 0x3b3e41, metalness: 0.9, roughness: 0.4 }),
+  epdm: new THREE.MeshStandardMaterial({ color: 0x141516, roughness: 0.88, emissive: 0x000000 }),
+  rubber: new THREE.MeshStandardMaterial({ color: 0x1c1e1f, roughness: 0.95 }),
+  red: new THREE.MeshStandardMaterial({ color: 0xd23a2b, roughness: 0.35, metalness: 0.2 }),
+  ppDoor: new THREE.MeshPhysicalMaterial({ color: 0x2b6a40, roughness: 0.46, clearcoat: 0.25, clearcoatRoughness: 0.5, side: THREE.DoubleSide }),
+  blue: new THREE.MeshStandardMaterial({ color: 0x2f6fb5, roughness: 0.35, metalness: 0.45 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0xcfa86a, roughness: 0.95 }),
+  ppClear: new THREE.MeshPhysicalMaterial({ color: 0xf2f4ef, roughness: 0.2, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  cord: new THREE.MeshStandardMaterial({ color: 0xf1efe6, roughness: 0.8 }),
+  white: new THREE.MeshStandardMaterial({ color: 0xf7f7f3, roughness: 0.5 }),
+  orange: new THREE.MeshStandardMaterial({ color: 0xe8792b, roughness: 0.4 }),
+  drawer: new THREE.MeshPhysicalMaterial({ color: 0x55705d, roughness: 0.55, clearcoat: 0.15, side: THREE.DoubleSide }),
+  bag: new THREE.MeshPhysicalMaterial({ color: 0x6fa64a, roughness: 0.55, transparent: true, opacity: 0.86, side: THREE.DoubleSide, sheen: 0.5, sheenColor: 0xd7f0b8, bumpMap: wrinkle, bumpScale: 3, clearcoat: 0.3, clearcoatRoughness: 0.4 }),
+  grid: new THREE.MeshStandardMaterial({ color: 0x4f5a53, roughness: 0.6 }),
+  carbon: new THREE.MeshStandardMaterial({ color: 0x1b1c1d, roughness: 0.9 }),
+  pc: new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.06, transmission: 0.9, thickness: 0.002, ior: 1.58, transparent: true, opacity: 0.35 }),
+  label: null,
+};
+housingMats.push(M.pp, M.ppDark, M.guard, M.ppDoor);
+clipMats.push(M.pp, M.ppGreen, M.ppDark, M.guard, M.inox);
+
+// ---------------------------------------------------------------------
+//  Utilidades de geometría
+// ---------------------------------------------------------------------
+const pickables = [];
+function mesh(geo, mat, shadow = true) { const m = new THREE.Mesh(geo, mat); m.castShadow = shadow; m.receiveShadow = true; return m; }
+function box(w, h, d, mat, r = 0, x = 0, y = 0, z = 0) {
+  const geo = r > 0 ? new RoundedBoxGeometry(w, h, d, 3, Math.min(r, w / 2 - 1e-4, h / 2 - 1e-4, d / 2 - 1e-4)) : new THREE.BoxGeometry(w, h, d);
+  const m = mesh(geo, mat); m.position.set(x, y, z); return m;
+}
+// cilindro con eje en X
+function cylX(r, len, mat, seg = 32, x = 0, y = 0, z = 0) { const geo = new THREE.CylinderGeometry(r, r, len, seg); geo.rotateZ(Math.PI / 2); const m = mesh(geo, mat); m.position.set(x, y, z); return m; }
+function cylY(r, len, mat, seg = 32, x = 0, y = 0, z = 0) { const m = mesh(new THREE.CylinderGeometry(r, r, len, seg), mat); m.position.set(x, y, z); return m; }
+function cylZ(r, len, mat, seg = 32, x = 0, y = 0, z = 0) { const geo = new THREE.CylinderGeometry(r, r, len, seg); geo.rotateX(Math.PI / 2); const m = mesh(geo, mat); m.position.set(x, y, z); return m; }
+function tag(obj, info) { obj.traverse(o => { if (o.isMesh) { o.userData.info = info; pickables.push(o); } }); return obj; }
+// Extruye una Shape (plano XY) con espesor t y la orienta con el eje de giro en X
+function extrudeX(shape, t, bevel = 0.0006) {
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: t, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 1, curveSegments: 10 });
+  geo.translate(0, 0, -t / 2); geo.rotateY(Math.PI / 2); // (x,y,z)->(z,y,-x): eje de extrusión pasa a X
+  // tras rotar, el plano de la forma es (−z, y); giramos para que forma.x → z
+  return geo;
+}
+// Rueda dentada (engranaje recto): perfil trapezoidal
+function gearShape(rp, teeth, module, hole) {
+  const ra = rp + module, rf = rp - 1.25 * module, s = new THREE.Shape();
+  for (let i = 0; i < teeth; i++) {
+    const a0 = i / teeth * TAU, da = TAU / teeth;
+    const pts = [[rf, a0], [rf, a0 + da * 0.18], [ra, a0 + da * 0.34], [ra, a0 + da * 0.52], [rf, a0 + da * 0.68], [rf, a0 + da]];
+    pts.forEach(([r, a], j) => { const x = Math.cos(a) * r, y = Math.sin(a) * r; (i === 0 && j === 0) ? s.moveTo(x, y) : s.lineTo(x, y); });
+  }
+  if (hole) { const h = new THREE.Path(); h.absarc(0, 0, hole, 0, TAU, true); s.holes.push(h); }
+  return s;
+}
+function gearGeo(rp, teeth, t, hole = 0.0045, spokes = 0) {
+  const module = TAU * rp / teeth / Math.PI;
+  const s = gearShape(rp, teeth, module, hole);
+  if (spokes && rp > 0.03) { // aligeramientos
+    for (let i = 0; i < spokes; i++) { const a = i / spokes * TAU + 0.3, h = new THREE.Path(), rr = rp * 0.55, rw = rp * 0.17; h.absarc(Math.cos(a) * rr, Math.sin(a) * rr, rw, 0, TAU, true); s.holes.push(h); }
+  }
+  return extrudeX(s, t);
+}
+// Piñón de cadena (dientes redondeados)
+function sprocketGeo(rp, teeth, t) {
+  const s = new THREE.Shape(), pitch = TAU * rp / teeth, rr = pitch * 0.32;
+  for (let i = 0; i <= teeth * 8; i++) {
+    const a = i / (teeth * 8) * TAU, ph = (a / TAU * teeth) % 1;
+    const r = rp + 0.0035 - (ph < 0.5 ? Math.sin(ph / 0.5 * Math.PI) * (rr + 0.0035) : 0) * 1;
+    const x = Math.cos(a) * r, y = Math.sin(a) * r; i === 0 ? s.moveTo(x, y) : s.lineTo(x, y);
+  }
+  const h = new THREE.Path(); h.absarc(0, 0, 0.0045, 0, TAU, true); s.holes.push(h);
+  if (rp > 0.03) for (let i = 0; i < 5; i++) { const a = i / 5 * TAU, hp = new THREE.Path(); hp.absarc(Math.cos(a) * rp * 0.55, Math.sin(a) * rp * 0.55, rp * 0.18, 0, TAU, true); s.holes.push(hp); }
+  return extrudeX(s, t, 0.0003);
+}
+// Resorte helicoidal de eje Y, altura unitaria (se escala en Y)
+class Helix extends THREE.Curve {
+  constructor(r, turns) { super(); this.r = r; this.turns = turns; }
+  getPoint(t, o = new THREE.Vector3()) { const a = t * this.turns * TAU; return o.set(Math.cos(a) * this.r, t, Math.sin(a) * this.r); }
+}
+function springGeo(r, wire, turns) { return new THREE.TubeGeometry(new Helix(r, turns), Math.round(turns * 24), wire, 8, false); }
+// Trayectoria rectángulo redondeado (plano XZ) para empaques
+function rrectCurve(w, d, r) {
+  const p = new THREE.CurvePath(), hw = w / 2 - r, hd = d / 2 - r, V = (x, z) => new THREE.Vector3(x, 0, z);
+  const arc = (cx, cz, a0) => { const c = new THREE.EllipseCurve(cx, cz, r, r, a0, a0 + Math.PI / 2, false); return { getPoint: (t) => { const q = c.getPoint(t); return V(q.x, q.y); } }; };
+  const L = (a, b) => new THREE.LineCurve3(a, b);
+  const segs = [L(V(-hw, d / 2), V(hw, d / 2))];
+  const pts = [];
+  // construimos como polilínea densa (más simple y robusta)
+  const add = (x, z) => pts.push(V(x, z));
+  for (let i = 0; i <= 8; i++) { const a = Math.PI / 2 - i / 8 * Math.PI / 2; add(hw + Math.cos(a) * r, hd + Math.sin(a) * r); }
+  for (let i = 0; i <= 8; i++) { const a = 0 - i / 8 * Math.PI / 2; add(hw + Math.cos(a) * r, -hd + Math.sin(a) * r); }
+  for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 - i / 8 * Math.PI / 2; add(-hw + Math.cos(a) * r, -hd + Math.sin(a) * r); }
+  for (let i = 0; i <= 8; i++) { const a = Math.PI - i / 8 * Math.PI / 2; add(-hw + Math.cos(a) * r, hd + Math.sin(a) * r); }
+  return new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.1);
+}
+function sealGeo(w, d, r, tube) { return new THREE.TubeGeometry(rrectCurve(w, d, r), 180, tube, 8, true); }
+// Placa con agujero rectangular (plano XZ), espesor en Y
+function frameGeo(w, d, hw, hd, t, r = 0.004) {
+  const s = new THREE.Shape(); s.moveTo(-w / 2, -d / 2); s.lineTo(w / 2, -d / 2); s.lineTo(w / 2, d / 2); s.lineTo(-w / 2, d / 2); s.lineTo(-w / 2, -d / 2);
+  const h = new THREE.Path(); h.moveTo(-hw / 2, -hd / 2); h.lineTo(-hw / 2, hd / 2); h.lineTo(hw / 2, hd / 2); h.lineTo(hw / 2, -hd / 2); h.lineTo(-hw / 2, -hd / 2); s.holes.push(h);
+  const geo = new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: true, bevelThickness: 0.001, bevelSize: 0.001, bevelSegments: 2 });
+  geo.rotateX(Math.PI / 2); geo.translate(0, t, 0); return geo;  // queda de y=0 a y=t
+}
+// Segmento (cilindro fino) entre dos puntos, reutilizable
+const _up = new THREE.Vector3(0, 1, 0), _v = new THREE.Vector3();
+function rodBetween(m, a, b) {
+  _v.subVectors(b, a); const L = _v.length();
+  m.position.copy(a).addScaledVector(_v, 0.5);
+  m.scale.set(1, Math.max(L, 1e-5), 1);
+  m.quaternion.setFromUnitVectors(_up, _v.normalize());
+}
+function rod(r, mat) { return mesh(new THREE.CylinderGeometry(r, r, 1, 10), mat); }
+
+// =====================================================================
+//  CONSTRUCCIÓN — CUERPO, CÁMARA, RODILLOS, TAPA, PUERTA, CAJÓN, BOLSA
+// =====================================================================
+const machine = new THREE.Group(); scene.add(machine);
+const casing = new THREE.Group(); machine.add(casing);
+const I = {}; // fichas de información (se completan en p7)
+const info = (k) => (I[k] ||= { name: k, desc: '', key: k });
+
+// ---------- Base y patas ----------
+{
+  const x0 = D.chanL.x0, x1 = D.carter.x1, w = x1 - x0;
+  casing.add(tag(box(w, 0.02, D.DP, M.ppDark, 0.006, (x0 + x1) / 2, 0.025, 0), info('base')));
+  [[x0 + 0.03, -0.17], [x1 - 0.03, -0.17], [x0 + 0.03, 0.17], [x1 - 0.03, 0.17]].forEach(([x, z]) => machine.add(tag(cylY(0.018, 0.015, M.rubber, 24, x, 0.0075, z), info('patas'))));
+}
+// ---------- Paredes del cuerpo (PP 3 mm) ----------
+{
+  const y0 = D.baseTop, y1 = D.frameTop - 0.012, h = y1 - y0, yc = (y0 + y1) / 2, t = D.t;
+  casing.add(tag(box(t, h, D.DP, M.pp, 0, -D.W / 2 + t / 2, yc, 0), info('paredIzq')), tag(box(t, h, D.DP, M.pp, 0, D.W / 2 - t / 2, yc, 0), info('paredDer')), tag(box(D.W, h, t, M.pp, 0, 0, yc, -D.DP / 2 + t / 2), info('paredAtras')));
+  { const s = new THREE.Shape(); s.moveTo(-D.W / 2, 0.302); s.lineTo(D.W / 2, 0.302); s.lineTo(D.W / 2, y1); s.lineTo(-D.W / 2, y1); s.lineTo(-D.W / 2, 0.302);
+    const hole = new THREE.Path(), cx = 0.170, cy = 0.33, a0 = 88 * Math.PI / 180, a1 = 182 * Math.PI / 180; hole.moveTo(cx + Math.cos(a0) * 0.014, cy + Math.sin(a0) * 0.014); hole.absarc(cx, cy, 0.068, a0, a1, false); hole.lineTo(cx + Math.cos(a1) * 0.014, cy + Math.sin(a1) * 0.014); hole.absarc(cx, cy, 0.014, a1, a0, true); s.holes.push(hole);
+    const fg = new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: false }); fg.translate(0, 0, D.DP / 2 - t); casing.add(tag(mesh(fg, M.pp), info('frente'))); }
+  const deck = mesh(frameGeo(D.W - 2 * t, D.DP - 2 * t, 0.262, 0.262, 0.004), M.pp); deck.position.y = 0.292; casing.add(tag(deck, info('piso')));
+  const top = mesh(frameGeo(D.W, D.DP, D.boca, D.boca, 0.012), M.pp); top.position.y = D.frameTop - 0.012; casing.add(tag(top, info('marco')));
+  casing.add(tag(box(D.W - 2 * t, 0.33, t, M.pp, 0, 0, 0.465, -0.149), info('columna')));
+  const logo = canvasTex(560, 128, (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = '#f4f8f1'; x.font = '700 70px Segoe UI, Arial'; x.textBaseline = 'middle'; x.fillText('RECOEVO', 20, 62); x.fillStyle = 'rgba(244,248,241,.8)'; x.font = '26px Segoe UI, Arial'; x.fillText('analógico · a pedal', 300, 104); });
+  const lg = mesh(new THREE.PlaneGeometry(0.2, 0.046), new THREE.MeshStandardMaterial({ map: logo, transparent: true, alphaTest: 0.35, depthWrite: false, roughness: 0.5 }), false);
+  lg.position.set(-0.07, 0.53, D.DP / 2 + 0.0005); casing.add(tag(lg, info('frente')));
+}
+// ---------- Carter derecho (transmisión) y canal izquierdo ----------
+{
+  const t = D.t, { x0, x1 } = D.carter, yTop = 0.585, yc = (D.baseTop + yTop) / 2, h = yTop - D.baseTop;
+  casing.add(tag(box(t, h, D.DP, M.guard, 0.002, x1 - t / 2, yc, 0), info('carter')), tag(box(x1 - x0, t, D.DP, M.guard, 0.002, (x0 + x1) / 2, yTop - t / 2, 0), info('carter')),
+    tag(box(x1 - x0, h, t, M.guard, 0, (x0 + x1) / 2, yc, -D.DP / 2 + t / 2), info('carter')), tag(box(x1 - x0, yTop - 0.108, t, M.guard, 0, (x0 + x1) / 2, (0.108 + yTop) / 2, D.DP / 2 - t / 2), info('carter')));
+  const c = D.chanL, yT2 = 0.40, h2 = yT2 - D.baseTop, yc2 = (D.baseTop + yT2) / 2;
+  casing.add(tag(box(t, h2, D.DP, M.guard, 0.002, c.x0 + t / 2, yc2, 0), info('canal')), tag(box(c.x1 - c.x0, t, D.DP, M.guard, 0.002, (c.x0 + c.x1) / 2, yT2 - t / 2, 0), info('canal')),
+    tag(box(c.x1 - c.x0, h2, t, M.guard, 0, (c.x0 + c.x1) / 2, yc2, -D.DP / 2 + t / 2), info('canal')), tag(box(c.x1 - c.x0, yT2 - 0.108, t, M.guard, 0, (c.x0 + c.x1) / 2, (0.108 + yT2) / 2, D.DP / 2 - t / 2), info('canal')));
+}
+// ---------- Tapa de recarga de aserrín en U (sobre el marco, queda bajo la tapa principal) ----------
+const hatch = { grp: new THREE.Group(), a: 0, aT: 0, w: 0, pour: 0 };
+{
+  const zh = -0.147; hatch.grp.position.set(0, D.frameTop + 0.002, zh); machine.add(hatch.grp);
+  for (const [x, z, w, d] of [[0, -0.1348, 0.368, 0.0245], [-0.1538, -0.004, 0.0605, 0.237], [0.1538, -0.004, 0.0605, 0.237]]) hatch.grp.add(tag(box(w, 0.004, d, M.wood, 0.0012, x, 0, z - zh), info('tapaRecarga')));
+  hatch.grp.add(tag(box(0.03, 0.005, 0.006, M.ppDark, 0.002, -0.1538, 0.003, 0.11 - zh), info('tapaRecarga')));
+  for (const s of [-1, 1]) machine.add(tag(cylX(0.003, 0.02, M.steel, 10, s * 0.17, D.frameTop + 0.002, zh), info('tapaRecarga')));
+}
+// ---------- Cámara de molido y retención (inox 304) ----------
+const chamber = new THREE.Group(); machine.add(chamber);
+{
+  const { hx, hz, y0, y1 } = D.ch, h = y1 - y0, yc = (y0 + y1) / 2, t = 0.0015;
+  chamber.add(tag(box(2 * hx + 2 * t, h, t, M.inox, 0, 0, yc, hz + t / 2), info('camaraFrente')), tag(box(2 * hx + 2 * t, h, t, M.inox, 0, 0, yc, -hz - t / 2), info('camaraAtras')),
+    tag(box(t, h, 2 * hz, M.inox, 0, hx + t / 2, yc, 0), info('camaraDer')), tag(box(t, h, 2 * hz, M.inox, 0, -hx - t / 2, yc, 0), info('camaraIzq')));
+  // boca 22 × 22 y tolva en V de 62° que lleva todo a la mordida de los rodillos
+  const hb = D.boca / 2, hy0 = 0.598, hy1 = D.frameTop - 0.012, hh = hy1 - hy0, hyc = (hy0 + hy1) / 2;
+  chamber.add(tag(box(D.boca, hh, t, M.inox, 0, 0, hyc, hb), info('tolva')), tag(box(D.boca, hh, t, M.inox, 0, 0, hyc, -hb), info('tolva')),
+    tag(box(t, hh, D.boca, M.inox, 0, hb, hyc, 0), info('tolva')), tag(box(t, hh, D.boca, M.inox, 0, -hb, hyc, 0), info('tolva')));
+  const fl = mesh(frameGeo(2 * hx + 0.02, 2 * hz + 0.02, D.boca, D.boca, 0.002), M.inox); fl.position.y = y1 - 0.002; chamber.add(tag(fl, info('tolva')));
+  const guides = [];
+  for (const s of [1, -1]) {
+    const a = new THREE.Vector3(0, hy0, s * hb), b = new THREE.Vector3(0, D.roll.y + 0.0269, s * 0.0559), L = a.distanceTo(b);
+    const gm = box(2 * hx, 0.0022, L, M.inox, 0.0008); gm.position.copy(a).add(b).multiplyScalar(0.5); gm.rotation.x = -s * Math.atan2(a.y - b.y, Math.abs(a.z - b.z));
+    chamber.add(tag(gm, info('embudo'))); guides.push({ a, b });
+  }
+  D.guides = guides;
+  for (const z of [D.roll.z, -D.roll.z]) for (const x of [-hx - 0.004, hx + 0.004, D.W / 2 + 0.004]) chamber.add(tag(cylX(0.014, 0.008, M.brass, 24, x, D.roll.y, z), info('bocin')));
+  for (const s of [-1, 1]) chamber.add(tag(cylZ(0.006, 0.01, M.brass, 16, s * D.gate.xh, D.gate.y, hz + 0.006), info('bocin')));
+}
+// ---------- Rodillos trituradores (ejes contrarrotantes con cuchillas intercaladas) ----------
+function bladeShape(dir) {
+  const s = new THREE.Shape(), rB = D.roll.rb, r0 = 0.026, n = 3, N = 90;
+  for (let i = 0; i <= N; i++) {
+    const a = i / N * TAU, ph = ((a / TAU) * n) % 1, p = dir > 0 ? ph : 1 - ph;
+    let r = r0;
+    if (p < 0.55) r = r0 + (rB - r0) * Math.pow(p / 0.55, 1.6);
+    else if (p < 0.62) r = rB - (rB - r0) * ((p - 0.55) / 0.07) * 0.85;
+    else r = r0 + (rB - r0) * 0.15 * (1 - (p - 0.62) / 0.38);
+    const x = Math.cos(a) * r, y = Math.sin(a) * r; i === 0 ? s.moveTo(x, y) : s.lineTo(x, y);
+  }
+  const h = new THREE.Path(); for (let i = 0; i <= 6; i++) { const a = i / 6 * TAU, x = Math.cos(a) * 0.0105, y = Math.sin(a) * 0.0105; i === 0 ? h.moveTo(x, y) : h.lineTo(x, y); }
+  s.holes.push(h); return s;
+}
+function makeRoller(front) {
+  const grp = new THREE.Group(), R = D.roll, dir = front ? -1 : 1;
+  const blade = extrudeX(bladeShape(dir), R.disc - 0.0006, 0.0004);
+  const spacer = new THREE.CylinderGeometry(R.rs, R.rs, 0.0118, 32); spacer.rotateZ(Math.PI / 2);
+  const shaftLen = front ? 0.42 : 0.40, xEnd = front ? 0.222 : 0.206, xStart = xEnd - shaftLen;
+  const sh = new THREE.CylinderGeometry(R.rsh, R.rsh, shaftLen, 6); sh.rotateZ(Math.PI / 2);
+  const shm = mesh(sh, M.steel); shm.position.x = (xStart + xEnd) / 2; grp.add(tag(shm, info('eje')));
+  const x0 = front ? -0.108 : -0.096, nb = front ? 10 : 9;
+  for (let i = 0; i < nb; i++) { const m = mesh(blade, M.inoxBlade); m.position.x = x0 + i * 0.024; m.rotation.x = (i * 0.7) + (front ? 0 : 0.35); grp.add(tag(m, info('cuchillas'))); }
+  for (let x = -0.114; x <= 0.1141; x += 0.012) {
+    const k = (x - x0) / 0.024, isBlade = Math.abs(k - Math.round(k)) < 0.05 && k > -0.05 && k < nb - 0.95;
+    if (!isBlade) { const m = mesh(spacer, M.inox); m.position.x = x; grp.add(tag(m, info('separadores'))); }
+  }
+  grp.position.set(0, R.y, front ? R.z : -R.z);
+  return grp;
+}
+const rollF = makeRoller(true), rollR = makeRoller(false); machine.add(rollF, rollR);
+{ // peine rascador: dedos fijos entre las cuchillas, por debajo, para despegar la pulpa
+  for (const front of [true, false]) {
+    const s = front ? 1 : -1, xs = front ? -0.096 : -0.108, n = front ? 9 : 10, g0 = [];
+    for (let i = 0; i < n; i++) { const g1 = new THREE.BoxGeometry(0.010, 0.003, D.ch.hz - 0.052); g1.translate(xs + i * 0.024, D.roll.y - 0.022, s * (0.052 + (D.ch.hz - 0.052) / 2)); g0.push(g1); }
+    machine.add(tag(mesh(mergeGeometries(g0), M.inox), info('peine')));
+  }
+}
+// ---------- TAPA con bisagra corrida trasera ----------
+const lid = { pivot: new THREE.Group(), hingeY: D.frameTop + 0.002, hingeZ: -D.DP / 2 + 0.008 };
+{
+  const p = lid.pivot; p.position.set(0, lid.hingeY, lid.hingeZ); machine.add(p);
+  const L = 0.392;
+  p.add(tag(box(D.W, D.lidT, L, M.pp, 0.01, 0, D.lidT / 2 - 0.002, L / 2 - 0.004), info('tapa')));
+  // placa blanca con el rótulo (se lee de frente, parado frente al equipo)
+  const decal = canvasTex(1024, 820, (x, W, H) => {
+    x.fillStyle = '#f7f8f4'; x.beginPath(); x.roundRect(0, 0, W, H, 40); x.fill();
+    x.fillStyle = '#2f7a3d'; x.beginPath(); x.roundRect(0, 0, W, 190, [40, 40, 0, 0]); x.fill();
+    x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 92px Segoe UI, Arial'; x.fillText('SOLO DESECHOS', W / 2, 90); x.fillText('ORGÁNICOS', W / 2, 172);
+    x.textAlign = 'left'; const ok = ['Cáscaras de fruta y verdura', 'Sobras de comida', 'Café y bolsitas de té', 'Cáscara de huevo', 'Servilletas sucias'];
+    ok.forEach((t, i) => { x.fillStyle = '#2f7a3d'; x.font = '800 54px Segoe UI, Arial'; x.fillText('✓', 60, 268 + i * 66); x.fillStyle = '#23342a'; x.font = '600 48px Segoe UI, Arial'; x.fillText(t, 130, 268 + i * 66); });
+    x.fillStyle = '#c62f22'; x.fillRect(40, 610, W - 80, 4);
+    const no = ['NO vidrio', 'NO metal', 'NO plástico', 'NO pilas'];
+    no.forEach((t, i) => { const cx = 60 + (i % 2) * 470, cy = 690 + Math.floor(i / 2) * 72; x.fillStyle = '#c62f22'; x.font = '800 54px Segoe UI, Arial'; x.fillText('✕', cx, cy); x.font = '700 50px Segoe UI, Arial'; x.fillText(t, cx + 64, cy); });
+  });
+  decal.anisotropy = 16;
+  const dm = mesh(new THREE.PlaneGeometry(0.25, 0.2), new THREE.MeshStandardMaterial({ map: decal, roughness: 0.55 }), false);
+  dm.rotation.x = -Math.PI / 2; dm.position.set(-0.03, D.lidT + 0.0008, L / 2 + 0.035); p.add(tag(dm, info('etiqueta')));
+  p.add(tag(box(0.16, 0.012, 0.018, M.ppDark, 0.005, 0, 0.012, L + 0.004), info('tapaAsa')));
+  const seal = mesh(sealGeo(0.33, 0.33, 0.03, 0.0045), M.epdm); seal.position.set(0, -0.001, L / 2); p.add(tag(seal, info('empaque'))); lid.seal = seal;
+  p.add(tag(box(0.012, 0.02, 0.004, M.red, 0.001, 0.165, -0.008, 0.375), info('lengueta')));
+  p.add(tag(box(0.05, 0.008, 0.01, M.steel, 0.002, 0, 0.018, L + 0.008), info('una')));
+  for (let i = 0; i < 8; i++) {
+    const kx = -0.175 + i * 0.05, k = cylX(0.0055, 0.022, M.inox, 16, kx, 0, 0);
+    if (i % 2 === 0) p.add(tag(k, info('bisagra'))); else { k.position.set(kx, lid.hingeY, lid.hingeZ); machine.add(tag(k, info('bisagra'))); }
+  }
+  machine.add(tag(cylX(0.0022, D.W - 0.01, M.steel, 12, 0, lid.hingeY, lid.hingeZ), info('bisagra')));
+  machine.add(tag(cylX(0.011, 0.018, M.blackSteel, 24, -0.2, lid.hingeY, lid.hingeZ), info('amortiguador')));
+  lid.L = L; lid.m = 1.2; lid.I = lid.m * (L * L + D.lidT * D.lidT) / 3; lid.rc = Math.hypot(L / 2, D.lidT / 2); lid.phic = Math.atan2(D.lidT / 2, L / 2);
+}
+// ---------- GANCHO DE PALANCA (cierre sobre-centro) ----------
+const latch = { pivot: new THREE.Group(), y: 0.606, z: D.DP / 2 + 0.006 };
+{
+  machine.add(tag(box(0.07, 0.03, 0.006, M.blackSteel, 0.002, 0, latch.y, D.DP / 2 + 0.003), info('gancho')));
+  latch.pivot.position.set(0, latch.y, latch.z); machine.add(latch.pivot);
+  latch.pivot.add(tag(box(0.05, 0.058, 0.008, M.ppGreen, 0.004, 0, -0.026, 0.004), info('gancho')));
+  latch.pivot.add(tag(cylX(0.004, 0.056, M.steel, 12, 0, 0, 0), info('gancho')));
+  latch.bailL = rod(0.0016, M.zinc); latch.bailR = rod(0.0016, M.zinc); latch.bailT = rod(0.0016, M.zinc);
+  [latch.bailL, latch.bailR, latch.bailT].forEach(b => machine.add(tag(b, info('estribo'))));
+}
+// ---------- PUERTA FRONTAL abatible (bisagra abajo) ----------
+const door = { pivot: new THREE.Group(), y: 0.038, z: D.DP / 2, h: 0.262, m: 0.9 };
+{
+  const p = door.pivot; p.position.set(0, door.y, door.z); machine.add(p);
+  p.add(tag(box(0.372, door.h, 0.022, M.ppDoor, 0.008, 0, door.h / 2, -0.011), info('puerta')));
+  p.add(tag(box(0.2, 0.018, 0.026, M.ppGreen, 0.008, 0, door.h - 0.03, 0.012), info('puertaAsa')));
+  const lbl = canvasTex(1024, 128, (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = 'rgba(255,255,255,.78)'; x.font = '600 46px Segoe UI, Arial'; x.textAlign = 'center'; x.fillText('Se abre cuando la aguja llega al ROJO', W / 2, 60); x.font = '34px Segoe UI, Arial'; x.fillStyle = 'rgba(255,255,255,.5)'; x.fillText('cajón de 20 L · bolsa compostable', W / 2, 108); });
+  const lm = mesh(new THREE.PlaneGeometry(0.32, 0.04), new THREE.MeshStandardMaterial({ map: lbl, transparent: true, depthWrite: false }), false); lm.position.set(0, 0.1, 0.0006); p.add(tag(lm, info('puerta')));
+  const ds = mesh(sealGeo(0.35, 0.235, 0.02, 0.003), M.epdm); ds.rotation.x = Math.PI / 2; ds.position.set(0, door.h / 2, -0.023); p.add(tag(ds, info('empaquePuerta')));
+  p.add(tag(box(0.018, 0.01, 0.012, M.steel, 0.002, 0.15, door.h - 0.012, -0.03), info('trinquete')));
+  for (const s of [-1, 1]) machine.add(tag(cylX(0.006, 0.05, M.inox, 16, s * 0.14, door.y, door.z - 0.004), info('bisagraPuerta')));
+  door.I = door.m * door.h * door.h / 3;
+}
+// ---------- BANDEJA DE PESAJE sobre 4 resortes ----------
+const tray = { grp: new THREE.Group(), springs: [] };
+{
+  tray.grp.add(tag(box(0.35, 0.006, 0.31, M.blackSteel, 0.002, 0, 0, 0), info('bandeja')));
+  // pestaña delantera derecha donde apoya la varilla de empuje del indicador
+  tray.grp.add(tag(box(0.014, 0.004, 0.014, M.blue, 0.001, 0.179, 0.0, 0.155), info('pestana')));
+  // dos guías bajas sobre las que se desliza el cajón (no hay rieles laterales: ese hueco queda libre para el alambre)
+  for (const s of [-1, 1]) tray.grp.add(tag(box(0.012, 0.003, 0.30, M.zinc, 0.001, s * 0.15, 0.0045, 0), info('rieles')));
+  tray.grp.position.set(0, D.tray.y, D.dr.z0 + D.dr.d / 2); machine.add(tray.grp);
+  const sg = springGeo(0.011, 0.0019, 5.5);
+  for (const [x, z] of [[-0.15, -0.12], [0.15, -0.12], [-0.15, 0.12], [0.15, 0.12]]) {
+    const s = mesh(sg, M.blue); s.position.set(x, D.baseTop, D.dr.z0 + D.dr.d / 2 + z); machine.add(tag(s, info('resortes'))); tray.springs.push(s);
+    machine.add(tag(cylY(0.016, 0.003, M.blackSteel, 20, x, D.baseTop + 0.0015, D.dr.z0 + D.dr.d / 2 + z), info('resortes')));
+  }
+}
+// ---------- CAJÓN extraíble ----------
+const drawer = { grp: new THREE.Group(), e: 0, v: 0, m: 1.35 };
+{
+  const { w, h, d, wall } = D.dr, g2 = drawer.grp;
+  [box(w, wall, d, M.drawer, 0.003, 0, wall / 2, 0), box(wall, h, d, M.drawer, 0.002, -w / 2 + wall / 2, h / 2, 0), box(wall, h, d, M.drawer, 0.002, w / 2 - wall / 2, h / 2, 0),
+    box(w, h, wall, M.drawer, 0.002, 0, h / 2, -d / 2 + wall / 2), box(w, h, wall, M.drawer, 0.002, 0, h / 2, d / 2 - wall / 2)].forEach(m => g2.add(tag(m, info('cajon'))));
+  const rim = mesh(sealGeo(w - 0.004, d - 0.004, 0.012, 0.004), M.drawer); rim.position.y = h; g2.add(tag(rim, info('cajon')));
+  g2.add(tag(box(0.13, 0.022, 0.014, M.ppDark, 0.006, 0, h - 0.04, d / 2 + 0.006), info('cajonAsa')));
+  g2.add(tag(box(0.1, 0.03, 0.008, M.ppGreen, 0.003, 0.1, 0.035, d / 2 + 0.004), info('reserva')));
+  const grid = box(w - 0.02, 0.003, d - 0.02, M.grid, 0.002, 0, 0.034, 0); g2.add(tag(grid, info('rejilla')));
+  for (const [x, z] of [[-0.14, -0.12], [0.14, -0.12], [-0.14, 0.12], [0.14, 0.12]]) g2.add(tag(cylY(0.004, 0.03, M.grid, 10, x, 0.018, z), info('rejilla')));
+  g2.position.set(0, 0.06, D.dr.z0 + d / 2); machine.add(g2);
+  drawer.rails = [];
+}
+// ---------- BOLSA compostable (con borde elástico y cordón) ----------
+const bag = { grp: new THREE.Group(), state: 'in', t: 0 };
+{
+  const { w, h, d } = D.dr, bw = w - 0.012, bd = d - 0.012, bh = h - 0.006;
+  const pos = [], uv = [], idx = [], NU = 64, NV = 12;
+  const per = (u) => { const L = 2 * (bw + bd), s = u * L; if (s < bw) return [-bw / 2 + s, bd / 2]; if (s < bw + bd) return [bw / 2, bd / 2 - (s - bw)]; if (s < 2 * bw + bd) return [bw / 2 - (s - bw - bd), -bd / 2]; return [-bw / 2, -bd / 2 + (s - 2 * bw - bd)]; };
+  for (let j = 0; j <= NV; j++) for (let i = 0; i <= NU; i++) {
+    const [x, z] = per(i / NU), f = j / NV, bulge = Math.sin(f * Math.PI) * 0.003 * (1 + Math.sin(i * 1.7) * 0.6);
+    const nx = Math.abs(x) >= bw / 2 - 1e-6 ? Math.sign(x) : 0, nz = Math.abs(z) >= bd / 2 - 1e-6 ? Math.sign(z) : 0;
+    pos.push(x - nx * bulge, 0.006 + f * bh, z - nz * bulge); uv.push(i / NU * 6, f * 1.4);
+  }
+  for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const a = j * (NU + 1) + i, b = a + 1, c = a + NU + 1, e = c + 1; idx.push(a, c, b, b, c, e); }
+  const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); sg.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); sg.setIndex(idx); sg.computeVertexNormals();
+  bag.side = mesh(sg, M.bag); bag.side.userData.base = Float32Array.from(pos); bag.grp.add(tag(bag.side, info('bolsa')));
+  bag.bottom = box(bw, 0.002, bd, M.bag, 0, 0, 0.006, 0); bag.grp.add(tag(bag.bottom, info('bolsa')));
+  bag.rim = mesh(sealGeo(w + 0.002, d + 0.002, 0.012, 0.0045), M.bag); bag.rim.position.y = h + 0.001; bag.grp.add(tag(bag.rim, info('bolsa')));
+  bag.cord = mesh(sealGeo(w - 0.004, d - 0.004, 0.012, 0.0014), M.cord); bag.cord.position.y = h - 0.004; bag.grp.add(tag(bag.cord, info('cordon')));
+  bag.NU = NU; bag.NV = NV; bag.bh = bh;
+  drawer.grp.add(bag.grp);
+}
+
+// =====================================================================
+//  CONSTRUCCIÓN — TRANSMISIÓN, COMPUERTA, PEDALES, SEGUROS, INDICADOR
+// =====================================================================
+// Fase de engrane: devuelve el ángulo inicial para que un diente de la rueda 1 quede
+// enfrentado a un hueco de la rueda 2 sobre la línea de centros.
+// Con extrudeX, un punto de la forma a ángulo a queda en (z=-cos a, y=sin a) y girar +x aumenta a.
+const shapeAngle = (dz, dy) => Math.atan2(dy, -dz);
+const TOOTH0 = 0.43; // fracción de paso donde está el centro del diente en gearShape
+function meshPhase(N1, N2, c1, c2) {
+  const au = shapeAngle(c2.z - c1.z, c2.y - c1.y);
+  const p1 = au - TOOTH0 / N1 * TAU;
+  const p2 = (au + Math.PI) - (TOOTH0 + 0.5) / N2 * TAU;
+  return [p1, p2];
+}
+const TR = {}; // piezas móviles de la transmisión
+{
+  const R = D.roll, xs = 0.2, xC = 0.214, xFly = 0.236, xSp = 0.252;
+  const cF = { y: R.y, z: R.z }, cR = { y: R.y, z: -R.z }, cB = { y: T.yB, z: T.zB }, cA = { y: T.yA, z: T.zA };
+  // engranajes de sincronización 1:1 (24 dientes)
+  const sync = gearGeo(R.z, 24, 0.008, 0.0045, 0);
+  TR.syncF = mesh(sync, M.steel); TR.syncR = mesh(sync, M.steel);
+  TR.syncF.position.set(xs, R.y, R.z); TR.syncR.position.set(xs, R.y, -R.z);
+  [TR.syncF, TR.syncR].forEach(m => machine.add(tag(m, info('sincro'))));
+  [TR.phF, TR.phR] = meshPhase(24, 24, cF, cR);
+  // corona del reductor (50 dientes) en el eje del rodillo delantero + piñón (10) en el eje del volante
+  TR.gearC = mesh(gearGeo(T.RC, 50, 0.009, 0.0045, 5), M.brass); TR.gearC.position.set(xC, R.y, R.z); machine.add(tag(TR.gearC, info('corona')));
+  TR.pinB = mesh(gearGeo(T.rPB, 10, 0.011, 0.004), M.steel); TR.pinB.position.set(xC, T.yB, T.zB); machine.add(tag(TR.pinB, info('pinonB')));
+  [TR.phPB, TR.phC] = meshPhase(10, 50, cB, cF);
+  // eje del volante (B) y volante de inercia
+  machine.add(tag(cylX(0.0055, 0.06, M.steel, 16, 0.227, T.yB, T.zB), info('ejeB')));
+  {
+    const fw = new THREE.Group(); fw.position.set(xFly, T.yB, T.zB);
+    const rimG = new THREE.TorusGeometry(0.063, 0.008, 12, 64); rimG.rotateY(Math.PI / 2);
+    fw.add(mesh(rimG, M.castIron));
+    fw.add(cylX(0.058, 0.004, M.castIron, 64));
+    fw.add(cylX(0.013, 0.02, M.castIron, 24));
+    const mark = box(0.0025, 0.02, 0.004, M.orange, 0, 0.004, 0.045, 0); fw.add(mark); // marca para ver el giro
+    tag(fw, info('volante')); machine.add(fw); TR.fly = fw;
+  }
+  // zapata de freno (actúa sobre la llanta del volante al soltar el gancho)
+  TR.brake = new THREE.Group(); TR.brake.position.set(xFly, T.yB + 0.078, T.zB);
+  TR.brake.add(box(0.012, 0.006, 0.04, M.rubber, 0.002, 0, 0, 0), box(0.004, 0.03, 0.01, M.steel, 0, 0.008, 0.015, 0));
+  machine.add(tag(TR.brake, info('freno')));
+  { const c = new THREE.CatmullRomCurve3([new THREE.Vector3(0.03, 0.596, 0.198), new THREE.Vector3(0.12, 0.58, 0.19), new THREE.Vector3(0.186, 0.56, 0.12), new THREE.Vector3(0.2, 0.53, 0.09), new THREE.Vector3(0.236, 0.51, T.zB + 0.01)]);
+    machine.add(tag(mesh(new THREE.TubeGeometry(c, 40, 0.0022, 8), M.blackSteel), info('cableFreno'))); }
+  // piñones de cadena 24 / 8 dientes y cadena de 1/2"
+  TR.spB = mesh(sprocketGeo(T.rB, 8, 0.004), M.blackSteel); TR.spB.position.set(xSp, T.yB, T.zB); machine.add(tag(TR.spB, info('pinonCadena')));
+  TR.spA = mesh(sprocketGeo(T.RA, 24, 0.004), M.blackSteel); TR.spA.position.set(xSp, T.yA, T.zA); machine.add(tag(TR.spA, info('catalina')));
+  machine.add(tag(cylX(0.0055, 0.07, M.steel, 16, 0.225, T.yA, T.zA), info('ejeA')));
+  // piñón de la cremallera con rueda libre (buje de bronce con trinquetes)
+  TR.pinA = mesh(gearGeo(T.rPin, 10, 0.012, 0.004), M.steel); TR.pinA.position.set(xC, T.yA, T.zA); machine.add(tag(TR.pinA, info('ruedaLibre')));
+  { // rueda de trinquete fija al eje A (gira con la cadena) + 2 uñas con resorte montadas en el piñón
+    const rs = new THREE.Shape(), n = 12, r0 = 0.0085, r1 = 0.0112;
+    for (let i = 0; i < n; i++) { const a0 = i / n * TAU, a1 = (i + 1) / n * TAU; const p0 = [Math.cos(a0) * r0, Math.sin(a0) * r0], p1 = [Math.cos(a1 - 0.02) * r1, Math.sin(a1 - 0.02) * r1], p2 = [Math.cos(a1) * r0, Math.sin(a1) * r0]; i ? rs.lineTo(...p0) : rs.moveTo(...p0); rs.lineTo(...p1); rs.lineTo(...p2); }
+    const hh = new THREE.Path(); hh.absarc(0, 0, 0.0045, 0, TAU, true); rs.holes.push(hh);
+    TR.ratchet = mesh(extrudeX(rs, 0.006, 0.0003), M.zinc); TR.ratchet.position.set(xC + 0.011, T.yA, T.zA); machine.add(tag(TR.ratchet, info('trinqueteRueda')));
+    TR.pawls = new THREE.Group(); TR.pawls.position.set(xC + 0.011, T.yA, T.zA);
+    const ring = new THREE.TorusGeometry(0.0155, 0.0018, 8, 40); ring.rotateY(Math.PI / 2); TR.pawls.add(mesh(ring, M.brass));
+    TR.pawlArms = [0, Math.PI].map(a => { const pg = new THREE.Group(); pg.rotation.x = a; const arm = box(0.005, 0.0022, 0.009, M.red, 0.0006, 0, 0.0128, -0.003); pg.add(arm); TR.pawls.add(pg); return arm; });
+    TR.pawls.add(box(0.004, 0.028, 0.004, M.brass, 0.001, -0.005, 0, 0));
+    machine.add(tag(TR.pawls, info('ruedaLibre')));
+  }
+  // soporte de ejes (platina en el carter)
+  for (const y of [T.yA, T.yB]) { machine.add(tag(box(0.006, 0.03, 0.03, M.blackSteel, 0.003, D.carter.x1 - 0.006, y, T.zA), info('platina'))); machine.add(tag(cylX(0.009, 0.008, M.brass, 20, D.carter.x1 - 0.011, y, T.zA), info('bocin'))); }
+  // cadena: recorrido cerrado alrededor de los dos piñones
+  {
+    const r1 = T.RA, r2 = T.rB, dist = T.yB - T.yA, beta = Math.asin((r1 - r2) / dist);
+    // puntos en el plano (z, y). Parámetro s en metros.
+    const segs = [];
+    const arc = (cy, r, a0, a1) => ({ L: Math.abs(a1 - a0) * r, p: (t) => { const a = a0 + (a1 - a0) * t; return [T.zA + Math.cos(a) * r, cy + Math.sin(a) * r, a1 > a0 ? a + Math.PI / 2 : a - Math.PI / 2]; } });
+    const line = (p, q) => ({ L: Math.hypot(q[0] - p[0], q[1] - p[1]), p: (t) => [lerp(p[0], q[0], t), lerp(p[1], q[1], t), Math.atan2(q[1] - p[1], q[0] - p[0])] });
+    // lado frontal (+z) sube, atrás baja (giro positivo de las ruedas)
+    const aF = beta, aB = Math.PI - beta;
+    const pA1 = [T.zA + Math.cos(aF) * r1, T.yA + Math.sin(aF) * r1], pB1 = [T.zA + Math.cos(aF) * r2, T.yB + Math.sin(aF) * r2];
+    const pB2 = [T.zA + Math.cos(aB) * r2, T.yB + Math.sin(aB) * r2], pA2 = [T.zA + Math.cos(aB) * r1, T.yA + Math.sin(aB) * r1];
+    segs.push(line(pA1, pB1), arc(T.yB, r2, aF, aB), line(pB2, pA2), arc(T.yA, r1, aB, aF + TAU));
+    const total = segs.reduce((a, s) => a + s.L, 0);
+    TR.chainAt = (s) => { s = ((s % total) + total) % total; for (const sg of segs) { if (s <= sg.L) return sg.p(s / sg.L); s -= sg.L; } return segs[0].p(0); };
+    TR.chainLen = total;
+    const n = Math.round(total / 0.0127); TR.chainPitch = total / n;
+    const lg = new RoundedBoxGeometry(0.0085, 0.0048, 0.0138, 2, 0.0018);
+    TR.chain = new THREE.InstancedMesh(lg, M.chain, n); TR.chain.castShadow = true; TR.chain.frustumCulled = false; machine.add(tag(TR.chain, info('cadena')));
+    TR.chainPins = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.0019, 0.0019, 0.0105, 8).rotateZ(Math.PI / 2), M.zinc, n); TR.chainPins.frustumCulled = false; machine.add(tag(TR.chainPins, info('cadena')));
+    TR.chainN = n; TR.chainX = xSp;
+  }
+  // ---- PEDAL DERECHO: palanca con pivote atrás; se pisa adelante ----
+  TR.pedR = new THREE.Group(); TR.pedR.position.set(T.xR, T.pivY, T.pivZ); machine.add(TR.pedR);
+  {
+    const arm = box(0.012, 0.012, T.armPad - 0.03, M.blackSteel, 0.002, 0, 0, (T.armPad - 0.03) / 2); TR.pedR.add(tag(arm, info('pedalR')));
+    const pad = new THREE.Group(); pad.position.set(-0.002, 0.006, T.armPad);
+    pad.add(box(0.07, 0.012, 0.085, M.rubber, 0.004, 0, 0, 0));
+    for (let i = 0; i < 6; i++) pad.add(box(0.064, 0.003, 0.006, M.rubber, 0.001, 0, 0.007, -0.034 + i * 0.0136));
+    TR.pedR.add(tag(pad, info('pedalR')));
+    TR.pedR.add(tag(cylX(0.009, 0.03, M.brass, 20, 0, 0, 0), info('pedalR')));
+    machine.add(tag(box(0.03, 0.02, 0.02, M.blackSteel, 0.002, T.xR, T.pivY - 0.004, T.pivZ), info('pedalR')));
+  }
+  // cremallera vertical (sube y baja con el pedal) y su guía
+  TR.rack = new THREE.Group(); machine.add(TR.rack);
+  {
+    const Lr = 0.17; TR.rack.add(box(0.01, Lr, 0.006, M.steel, 0.001, 0, Lr / 2, 0.0054));
+    const pitch = TAU * T.rPin / 10; TR.rackPitch = pitch;
+    const tg = [];
+    for (let y = 0.004; y < Lr; y += pitch) { const tt = new THREE.BoxGeometry(0.01, pitch * 0.45, 0.0048); tt.translate(0, y, 0); tg.push(tt); }
+    TR.rack.add(mesh(mergeGeometries(tg), M.steel));
+    tag(TR.rack, info('cremallera'));
+    machine.add(tag(box(0.018, 0.02, 0.016, M.blackSteel, 0.002, 0.214, 0.235, T.zRack + 0.004), info('cremallera')));
+    TR.rackLink = rod(0.0025, M.zinc); machine.add(tag(TR.rackLink, info('cremallera')));
+  }
+  // resorte de retorno (tracción) y fuelle de extracción
+  { const ts = mesh(springGeo(0.011, 0.0014, 6), M.zinc); ts.scale.y = 0.02; ts.rotation.z = -Math.PI / 2; ts.position.set(T.xR + 0.008, T.pivY, T.pivZ); machine.add(tag(ts, info('retorno'))); TR.retSpring = ts;
+    TR.retLeg = rod(0.0014, M.zinc); machine.add(tag(TR.retLeg, info('retorno'))); }
+  {
+    const pts = []; for (let i = 0; i <= 14; i++) pts.push(new THREE.Vector2(i % 2 ? 0.02 : 0.016, i / 14));
+    TR.bellows = mesh(new THREE.LatheGeometry(pts, 28), M.rubber); machine.add(tag(TR.bellows, info('fuelle')));
+    machine.add(tag(box(0.05, 0.004, 0.05, M.blackSteel, 0.001, T.xR, 0.112, -0.05), info('fuelle')));
+    const hose = new THREE.CatmullRomCurve3([new THREE.Vector3(T.xR, 0.114, -0.05), new THREE.Vector3(T.xR, 0.2, -0.12), new THREE.Vector3(0.21, 0.36, -0.178), new THREE.Vector3(0.12, 0.395, -0.176), new THREE.Vector3(0.07, 0.4, -0.174)]);
+    machine.add(tag(mesh(new THREE.TubeGeometry(hose, 40, 0.005, 10), M.rubber), info('manguera')));
+    machine.add(tag(box(0.05, 0.03, 0.035, M.ppDark, 0.004, 0.075, 0.4, -0.174), info('colector')));
+  }
+  // pasador rojo del seguro infantil (entra debajo de la palanca del pedal)
+  TR.lockR = cylX(0.0045, 0.03, M.red, 16, 0, 0, 0); machine.add(tag(TR.lockR, info('seguroR')));
+  machine.add(tag(box(0.012, 0.02, 0.02, M.blackSteel, 0.002, 0.196, 0.073, 0.178), info('seguroR')));
+
+}
+// ---------- PEDAL IZQUIERDO (aserrín) ----------
+{
+  TR.pedL = new THREE.Group(); TR.pedL.position.set(T.xL, T.pivY, T.pivZ); machine.add(TR.pedL);
+  TR.pedL.add(tag(box(0.012, 0.012, T.armPad - 0.03, M.blackSteel, 0.002, 0, 0, (T.armPad - 0.03) / 2), info('pedalL')));
+  const pad = new THREE.Group(); pad.position.set(0.002, 0.006, T.armPad);
+  pad.add(box(0.05, 0.012, 0.085, M.rubber, 0.004, 0, 0, 0));
+  for (let i = 0; i < 6; i++) pad.add(box(0.044, 0.003, 0.006, M.rubber, 0.001, 0, 0.007, -0.034 + i * 0.0136));
+  pad.add(box(0.05, 0.004, 0.02, M.wood, 0.001, 0, 0.004, 0.036));
+  TR.pedL.add(tag(pad, info('pedalL')));
+  TR.pedL.add(tag(cylX(0.009, 0.03, M.brass, 20), info('pedalL')));
+  { const ts = mesh(springGeo(0.011, 0.0014, 6), M.zinc); ts.scale.y = 0.02; ts.rotation.z = Math.PI / 2; ts.position.set(T.xL - 0.008, T.pivY, T.pivZ); machine.add(tag(ts, info('retornoL'))); TR.retL = ts; TR.retLegL = rod(0.0014, M.zinc); machine.add(tag(TR.retLegL, info('retornoL'))); }
+  TR.doorPlg = [-1, 1].map(s => { const m = cylZ(0.004, 0.016, M.red, 12, s * 0.176, 0.075, 0.176); machine.add(tag(m, info('pulsadorPuerta'))); return m; });
+  TR.lockD = cylX(0.0045, 0.03, M.red, 16); machine.add(tag(TR.lockD, info('seguroPuerta')));
+  TR.lockDLink = rod(0.0016, M.red); machine.add(tag(TR.lockDLink, info('pulsadorPuerta')));
+  TR.lockLLink = rod(0.0016, M.red); machine.add(tag(TR.lockLLink, info('pulsadorPuerta')));
+  TR.lockL = cylX(0.0045, 0.028, M.red, 16); machine.add(tag(TR.lockL, info('seguroL')));
+}
+// ---------- SISTEMA ROJO: seguro infantil (tapa → pulsador → varilla → escuadra → pasador del pedal) ----------
+const SAFE = {};
+{
+  const x = 0.183, z = 0.186;
+  SAFE.plunger = cylY(0.004, 0.014, M.red, 12, 0.165, D.frameTop - 0.019, 0.183); machine.add(tag(SAFE.plunger, info('pulsador')));
+  SAFE.arm = box(0.02, 0.004, 0.006, M.red, 0.001, 0.174, D.frameTop - 0.026, 0.184); machine.add(tag(SAFE.arm, info('varillaSeguro')));
+  SAFE.rod = rod(0.0022, M.red); machine.add(tag(SAFE.rod, info('varillaSeguro')));
+  for (const y of [0.55, 0.42, 0.28, 0.15]) machine.add(tag(box(0.01, 0.006, 0.012, M.blackSteel, 0.001, x + 0.003, y, z), info('guiaSeguro')));
+  SAFE.crank = new THREE.Group(); SAFE.crank.position.set(0.185, 0.08, 0.178);
+  SAFE.crank.add(box(0.004, 0.022, 0.006, M.red, 0.001, 0, 0.011, 0), box(0.018, 0.004, 0.006, M.red, 0.001, 0.009, 0, 0), cylZ(0.003, 0.012, M.steel, 10));
+  machine.add(tag(SAFE.crank, info('escuadra')));
+}
+// ---------- SISTEMA AZUL: báscula de resortes con flecha y lámina de colores (sin engranajes) ----------
+// bandeja (baja 1 mm por kg) → alambre → palanca en L estampada (brazo corto 9 mm) cuyo brazo largo ES la flecha → lámina impresa en abanico
+const gauge = { P: new THREE.Vector3(0.170, 0.33, 0), a0: 85 * Math.PI / 180, sweep: 80 * Math.PI / 180, arm: 0.009, full: 12.5, zB: 0.172 };
+{
+  const P = gauge.P, ang = (kg) => -Math.PI / 2 - gauge.a0 + kg / gauge.full * gauge.sweep; // ángulo en la lámina (lienzo)
+  const face = canvasTex(1024, 1024, (x, W, H) => {
+    const cx = W / 2, cy = H / 2, R = W / 2;
+    const band = (a, b, c) => { x.fillStyle = c; x.beginPath(); x.moveTo(cx, cy); x.arc(cx, cy, R * 0.99, ang(a), ang(b)); x.closePath(); x.fill(); };
+    x.fillStyle = '#f4f4ef'; x.beginPath(); x.moveTo(cx, cy); x.arc(cx, cy, R, ang(-0.8), ang(13.3)); x.closePath(); x.fill();
+    band(0, 7, '#3f9a4c'); band(7, 10.2, '#e0b02f'); band(10.2, 12.5, '#d2412f');
+    x.fillStyle = '#f4f4ef'; x.beginPath(); x.arc(cx, cy, R * 0.56, 0, TAU); x.fill();
+    x.strokeStyle = '#fff'; x.fillStyle = '#222'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    for (let k = 0; k <= 12; k++) { const a = ang(k); x.lineWidth = 6; x.beginPath(); x.moveTo(cx + Math.cos(a) * R * 0.98, cy + Math.sin(a) * R * 0.98); x.lineTo(cx + Math.cos(a) * R * (k % 2 ? 0.9 : 0.84), cy + Math.sin(a) * R * (k % 2 ? 0.9 : 0.84)); x.stroke(); if (k % 2 === 0) { x.font = '700 62px Segoe UI, Arial'; x.fillText(k, cx + Math.cos(a) * R * 0.66, cy + Math.sin(a) * R * 0.66); } }
+    x.font = '800 44px Segoe UI, Arial'; x.fillStyle = '#fff'; const av = ang(11.35); x.save(); x.translate(cx + Math.cos(av) * R * 0.91, cy + Math.sin(av) * R * 0.91); x.rotate(av + Math.PI / 2); x.fillText('VACIAR', 0, 0); x.restore();
+    x.fillStyle = '#555'; x.font = '600 46px Segoe UI, Arial'; x.fillText('kg', cx, cy - R * 0.38);
+  });
+  const th0 = Math.PI / 2 + gauge.a0 - gauge.sweep - 0.09, thL = gauge.sweep + 0.18;
+  const fan = mesh(new THREE.CircleGeometry(0.068, 48, th0, thL), new THREE.MeshStandardMaterial({ map: face, roughness: 0.55 }), false); fan.position.set(P.x, P.y, D.DP / 2 - 0.0045); machine.add(tag(fan, info('lamina')));
+  const cover = mesh(new THREE.CircleGeometry(0.068, 48, th0, thL), M.pc, false); cover.position.set(P.x, P.y, D.DP / 2 + 0.0006); machine.add(tag(cover, info('lamina')));
+  // flecha = brazo largo de la palanca (62 mm)
+  gauge.arrow = new THREE.Group(); gauge.arrow.position.set(P.x, P.y, D.DP / 2 - 0.0028);
+  const tri = new THREE.Shape(); tri.moveTo(-0.004, 0.052); tri.lineTo(0, 0.064); tri.lineTo(0.004, 0.052); tri.lineTo(-0.004, 0.052);
+  gauge.arrow.add(box(0.0024, 0.054, 0.0012, M.red, 0.0005, 0, 0.026, 0), mesh(new THREE.ShapeGeometry(tri), M.red, false), cylZ(0.004, 0.0025, M.blackSteel, 16));
+  machine.add(tag(gauge.arrow, info('flecha')));
+  // eje (remache) y brazo corto de 9 mm donde tira el alambre
+  machine.add(tag(cylZ(0.0018, D.DP / 2 - gauge.zB, M.steel, 10, P.x, P.y, (D.DP / 2 + gauge.zB) / 2), info('flecha')));
+  gauge.inArm = new THREE.Group(); gauge.inArm.position.set(P.x, P.y, gauge.zB); gauge.inArm.add(box(0.013, 0.004, 0.003, M.blue, 0.0008, 0.0045, 0, 0), box(0.004, 0.022, 0.003, M.blue, 0.0008, 0, -0.011, 0));
+  machine.add(tag(gauge.inArm, info('palanca')));
+  machine.add(tag(box(0.012, 0.03, 0.004, M.blackSteel, 0.001, P.x - 0.012, P.y - 0.006, gauge.zB - 0.004), info('palanca')));
+  gauge.push = rod(0.0016, M.blue); machine.add(tag(gauge.push, info('varillaPeso')));
+  // la palanca, al pasar el rojo, empuja con su brazo de abajo el trinquete que traba la puerta
+  gauge.pawl = new THREE.Group(); gauge.pawl.position.set(0.15, 0.304, 0.172);
+  gauge.pawl.add(box(0.014, 0.004, 0.022, M.steel, 0.001, 0, 0, 0.004), box(0.014, 0.008, 0.004, M.steel, 0.001, 0, -0.005, 0.013), cylX(0.0025, 0.018, M.brass, 10));
+  machine.add(tag(gauge.pawl, info('trinquete')));
+  gauge.tripRod = rod(0.0014, M.blue); machine.add(tag(gauge.tripRod, info('trinquete')));
+}
+// ---------- DOSIFICADOR DE ASERRÍN EN U (pedal izquierdo → cable → placa de celdas en U) ----------
+// El depósito rodea la cámara por atrás y por los dos lados: es el hueco que ya deja el cuerpo rotomoldeado.
+const SAW = { cap: 1000, y0: 0.30, y1: 0.626, plateY: 0.2975, travel: 0.015, dose: 6 };
+SAW.boxes = [
+  { x0: -0.184, x1: 0.184, z0: -0.147, z1: -0.1225, n: 'atrás' },
+  { x0: -0.184, x1: -0.1235, z0: -0.1225, z1: 0.115, n: 'izquierda' },
+  { x0: 0.1235, x1: 0.184, z0: -0.1225, z1: 0.115, n: 'derecha' },
+];
+{
+  const H = SAW.y1 - SAW.y0, yc = (SAW.y0 + SAW.y1) / 2; SAW.fills = [];
+  for (const b of SAW.boxes) {
+    const w = b.x1 - b.x0, d = b.z1 - b.z0, xc = (b.x0 + b.x1) / 2, zc = (b.z0 + b.z1) / 2;
+    const ws = [box(w, H, 0.0015, M.ppClear, 0, xc, yc, b.z0), box(w, H, 0.0015, M.ppClear, 0, xc, yc, b.z1), box(0.0015, H, d, M.ppClear, 0, b.x0, yc, zc), box(0.0015, H, d, M.ppClear, 0, b.x1, yc, zc)];
+    ws.forEach(m => { m.castShadow = false; machine.add(tag(m, info('deposito'))); });
+    const f = box(w - 0.004, 1, d - 0.004, M.wood, 0.001, xc, 0, zc); f.castShadow = false; machine.add(tag(f, info('aserrinDep'))); SAW.fills.push(f);
+  }
+  // camisas por donde los ejes de los rodillos atraviesan los depósitos laterales
+  for (const sx of [-1, 1]) for (const z of [D.roll.z, -D.roll.z]) machine.add(tag(cylX(0.012, 0.06, M.ppDark, 16, sx * 0.154, D.roll.y, z), info('camisa')));
+  // placa dosificadora en U con celdas (se desliza 15 mm hacia el frente)
+  SAW.plate = new THREE.Group(); machine.add(SAW.plate);
+  const pm = M.zinc, cells = [];
+  SAW.plate.add(box(0.37, 0.002, 0.03, pm, 0.0006, 0, SAW.plateY, -0.1335), box(0.066, 0.002, 0.24, pm, 0.0006, -0.154, SAW.plateY, -0.005), box(0.066, 0.002, 0.24, pm, 0.0006, 0.154, SAW.plateY, -0.005));
+  for (let x = -0.15; x <= 0.1501; x += 0.03) cells.push([x, -0.1335]);
+  for (let z = -0.105; z <= 0.1051; z += 0.03) { cells.push([-0.154, z]); cells.push([0.154, z]); }
+  const cg = []; for (const [x, z] of cells) { const g1 = new THREE.CylinderGeometry(0.0075, 0.0075, 0.0025, 16); g1.translate(x, SAW.plateY, z); cg.push(g1); }
+  SAW.plate.add(mesh(mergeGeometries(cg), M.wood)); SAW.cells = cells;
+  SAW.plate.add(box(0.01, 0.004, 0.02, M.steel, 0.001, -0.178, SAW.plateY + 0.002, 0.115));
+  tag(SAW.plate, info('placaDosif'));
+  // ranuras del piso con labios que lanzan la dosis hacia el centro
+  for (const [x, z, w, d] of [[0, -0.1335, 0.33, 0.012], [-0.154, -0.005, 0.012, 0.23], [0.154, -0.005, 0.012, 0.23]]) machine.add(tag(box(w, 0.0015, d, M.blackSteel, 0, x, 0.2915, z), info('ranuraAserrin')));
+  SAW.spring = mesh(springGeo(0.004, 0.0008, 12), M.zinc); SAW.spring.rotation.x = -Math.PI / 2; machine.add(tag(SAW.spring, info('retornoPlaca')));
+  // cable desde el pedal izquierdo, polea y guía
+  SAW.pulley = cylX(0.011, 0.006, M.brass, 24, -0.205, 0.30, 0.172); machine.add(tag(SAW.pulley, info('polea')));
+  SAW.cableV = rod(0.0012, M.blackSteel); SAW.cableH = rod(0.0012, M.blackSteel); machine.add(tag(SAW.cableV, info('cable')), tag(SAW.cableH, info('cable')));
+}
+// ---------- COLUMNA DE OLORES: puerto → carbón activado → fuelle → válvula de una vía ----------
+{
+  machine.add(tag(box(0.12, 0.06, 0.045, M.carbon, 0.004, 0, 0.43, -0.174), info('carbon')));
+  const lbl = canvasTex(256, 128, (x, W, H) => { x.fillStyle = '#1b1c1d'; x.fillRect(0, 0, W, H); x.fillStyle = '#9fd3a6'; x.font = '600 26px Segoe UI'; x.fillText('CARBÓN ACTIVADO', 14, 50); x.fillStyle = '#ccc'; x.font = '22px Segoe UI'; x.fillText('250 g · cambio c/6 meses', 14, 92); });
+  const lm = mesh(new THREE.PlaneGeometry(0.1, 0.05), new THREE.MeshStandardMaterial({ map: lbl }), false); lm.position.set(0, 0.43, -0.1512); machine.add(tag(lm, info('carbon')));
+  machine.add(tag(cylZ(0.016, 0.012, M.ppDark, 24, 0, 0.62, -D.DP / 2 - 0.004), info('valvula')));
+  const flap = cylZ(0.011, 0.002, M.epdm, 24, 0, 0.62, -D.DP / 2 - 0.011); machine.add(tag(flap, info('valvula'))); SAW.valveFlap = flap;
+  // rejilla de aspiración atrás del compartimento del cajón, justo encima de la bolsa (ahí se junta el olor)
+  { const gr = canvasTex(256, 128, (x, W, H) => { x.fillStyle = '#252d28'; x.fillRect(0, 0, W, H); x.fillStyle = '#0c0f0d'; for (let i = 0; i < 9; i++) x.fillRect(14 + i * 26, 18, 14, H - 36); });
+    const g1 = mesh(new THREE.PlaneGeometry(0.12, 0.022), new THREE.MeshStandardMaterial({ map: gr, roughness: 0.7 }), false); g1.position.set(0, 0.279, -0.1455); machine.add(tag(g1, info('puerto')));
+    machine.add(tag(box(0.13, 0.03, 0.02, M.ppDark, 0.003, 0, 0.279, -0.157), info('puerto'))); }
+  const duct1 = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0.279, -0.165), new THREE.Vector3(0, 0.3, -0.174), new THREE.Vector3(0, 0.35, -0.175), new THREE.Vector3(0, 0.398, -0.174)]);
+  machine.add(tag(mesh(new THREE.TubeGeometry(duct1, 30, 0.008, 10), M.ppDark), info('ductoOlor')));
+  const duct2 = new THREE.CatmullRomCurve3([new THREE.Vector3(0.02, 0.46, -0.176), new THREE.Vector3(0.01, 0.54, -0.18), new THREE.Vector3(0, 0.605, -0.19), new THREE.Vector3(0, 0.62, -0.2)]);
+  machine.add(tag(mesh(new THREE.TubeGeometry(duct2, 20, 0.009, 10), M.ppDark), info('valvula')));
+}
+// ---------- Rótulos de los pedales y del carter ----------
+{
+  const decal = (w, h, draw, x, y, z, rx = -Math.PI / 2, ry = 0) => {
+    const t = canvasTex(Math.round(w * 4000), Math.round(h * 4000), draw);
+    const m = mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: t, transparent: true, depthWrite: false, roughness: 0.6 }), false);
+    m.rotation.set(rx, ry, 0); m.position.set(x, y, z); machine.add(m); return m;
+  };
+  const lbl = (txt, sub, col) => (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = col; x.font = `700 ${Math.min(H * 0.42, W / txt.length * 1.5)}px Segoe UI, Arial`; x.textAlign = 'center'; x.fillText(txt, W / 2, H * 0.5); x.fillStyle = 'rgba(244,248,241,.8)'; x.font = `${H * 0.26}px Segoe UI, Arial`; x.fillText(sub, W / 2, H * 0.88); };
+  decal(0.066, 0.019, lbl('TRITURAR', 'pedal derecho', '#f4f8f1'), 0.226, 0.135, D.DP / 2 + 0.0008, 0);
+  decal(0.042, 0.019, lbl('ASERRÍN', 'pedal izq.', '#f1d9a8'), -0.212, 0.135, D.DP / 2 + 0.0008, 0);
+  // rejilla de ventilación y advertencia en la tapa del carter
+  decal(0.16, 0.06, (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = '#e0b02f'; x.beginPath(); x.moveTo(70, 20); x.lineTo(130, 125); x.lineTo(10, 125); x.closePath(); x.fill(); x.fillStyle = '#222'; x.font = '700 70px Arial'; x.fillText('!', 58, 115);
+    x.fillStyle = 'rgba(244,248,241,.92)'; x.font = '600 34px Segoe UI, Arial'; x.fillText('Transmisión a pedal', 160, 62); x.font = '28px Segoe UI, Arial'; x.fillText('No introducir los dedos', 160, 108); }, D.carter.x1 + 0.0008, 0.2, 0.1, 0, Math.PI / 2);
+}
+
+// =====================================================================
+//  FÍSICA DE MECANISMOS (integración semi-implícita a 1 kHz)
+// =====================================================================
+const S = {
+  th: 0, om: 0, lidHand: null,                       // tapa: ángulo (rad), velocidad
+  lat: 1, latT: 1, engaged: true,                    // gancho: 0 abierto … 1 cerrado
+  sR: 0, vR: 0, footR: false, auto: false, autoPress: false, autoT: 0, lockD: 0,
+  wB: 0, thB: 0, thPin: 0, lockR: 0, loadC: 0, engagedFW: false,
+  sL: 0, vL: 0, footL: false, lockL: 0,
+  saw: 0, sawG: 700, sawArmed: true, doses: 0, hatchOpen: 0,
+  de: 0, wd: 0, doorHand: null, doorLatched: true,
+  e: 0, ve: 0, drawerHand: null,
+  x: 0, vx: 0, key: 0,
+  bagMass: 0, spilled: 0, crushedTotal: 0,
+};
+const K = {
+  thSeat: 0.0035 / lid.L, thMax: 1.83,               // 105° tope de bisagra
+  mR: 0.45, F0R: 14, kR: 380, Ffoot: 420, vFoot: 0.62,// pie: F = Fmax(1 − v/vmax)
+  IB: 0.0046, tauC: 0.028, bB: 1.6e-4, brake: 1.7,   // volante 1,45 kg Ø14 cm
+  mL: 0.4, F0L: 10, kL: 300, kot: 8000, rc: 0.025,   // cable con resorte de sobrecarrera
+  kPlate: 350,
+  kD: 0.55, tD0: 0.15, cD: 0.12,
+  kTray: D.tray.k, trayFree: 0.0606, trayStop: 0.016,
+  mDrawer: 1.35 + 0.25, mBag: 0.05, redKg: 10.2, fullKg: 12,
+};
+const tareKg = K.mDrawer + K.mBag;
+// ---------- Gancho: geometría del estribo → compresión real del empaque ----------
+const _a = new THREE.Vector3(), _b = new THREE.Vector3();
+function latchAttach(lam, out) { const a = -1.9 * (1 - lam), ly = -0.012, lz = 0.009; return out.set(0, latch.y + ly * Math.cos(a) - lz * Math.sin(a), latch.z + ly * Math.sin(a) + lz * Math.cos(a)); }
+function unaPos(th, out) { const ly = 0.018, lz = lid.L + 0.008; return out.set(0, lid.hingeY + ly * Math.cos(th) + lz * Math.sin(th), lid.hingeZ - ly * Math.sin(th) + lz * Math.cos(th)); }
+const BAIL = (() => { latchAttach(1, _a); unaPos(K.thSeat, _b); return _a.distanceTo(_b) - 0.0035; })();
+function latchComp(lam) { latchAttach(lam, _a); unaPos(K.thSeat, _b); return clamp(_a.distanceTo(_b) - BAIL, 0, 0.0036); }
+const sealed = () => S.engaged && latchComp(S.lat) >= 0.003;
+
+// ---------- Colisión puerta ↔ cajón (geometría real, se resuelve por bisección) ----------
+function trayTop() { return K.trayFree - S.x; }
+function drawerY(e) { return lerp(trayTop(), 0.0622, smooth(0, 0.012, e)); }
+function doorHits(de, e) {
+  const zF = D.dr.z0 + D.dr.d + e, yb = drawerY(e), yt = yb + D.dr.h;
+  const pts = [[yt, zF], [yb + 0.5 * D.dr.h, zF], [yb, zF], [yb + D.dr.h - 0.04, zF + 0.014]];
+  for (let k = 1; k <= 6; k++) pts.push([yb, zF - k * 0.05]);
+  const c = Math.cos(de), s = Math.sin(de);
+  for (const [y, z] of pts) {
+    const Y = y - door.y, Z = z - door.z, yl = Y * c + Z * s, zl = -Y * s + Z * c;
+    if (yl > -0.002 && yl < door.h && zl > -0.0235 && zl < 0.004) return true;
+  }
+  return false;
+}
+function solveConstraint(oldV, newV, hits) { // devuelve el valor admisible más cercano a newV
+  if (!hits(newV)) return [newV, false];
+  if (hits(oldV)) return [oldV, true];
+  let a = oldV, b = newV; for (let i = 0; i < 14; i++) { const m = (a + b) / 2; if (hits(m)) b = m; else a = m; } return [a, true];
+}
+
+let heapWorldY = () => -1; // se define con el montón (p5)
+// ---------- Paso de mecanismos ----------
+const EV = { lidThud: 0, doorThud: 0, clicks: 0, latchClack: 0, lockBlockR: 0, lockBlockL: 0, lockWhyR: '', dose: 0, noSaw: 0 };
+function footForce(pressing, v) { return pressing ? K.Ffoot * clamp(1 - v / K.vFoot, 0, 1) : 0; }
+
+function stepMech(dt) {
+  // ----- GANCHO -----
+  const latPrev = S.lat;
+  S.lat += clamp(S.latT - S.lat, -5 * dt, 5 * dt);
+  if (latPrev < 0.5 && S.lat >= 0.5) { S.engaged = S.th < K.thSeat + 0.012; EV.latchClack = 1; }
+  if (latPrev >= 0.3 && S.lat < 0.3) { S.engaged = false; EV.latchClack = 1; }
+  const comp = S.engaged ? latchComp(S.lat) : 0;
+  // ----- TAPA -----
+  const thLow = K.thSeat - comp / lid.L, thHigh = S.engaged ? thLow : K.thMax;
+  let tq = -lid.m * g * lid.rc * Math.cos(S.th + lid.phic);
+  tq += (S.om < 0 && S.th < 0.9) ? -0.42 * S.om : -0.02 * S.om; // amortiguador de cierre suave
+  tq -= Math.sign(S.om) * 0.025;
+  if (S.lidHand !== null) tq += clamp(16 * (S.lidHand - S.th) - 1.1 * S.om, -12, 12);
+  S.om += tq / lid.I * dt; S.th += S.om * dt;
+  if (S.th < thLow) { if (S.om < -0.6) EV.lidThud = Math.max(EV.lidThud, -S.om); S.th = thLow; S.om = Math.max(0, S.om); }
+  if (S.th > thHigh) { S.th = thHigh; S.om = S.engaged ? Math.min(0, S.om) : -0.15 * Math.abs(S.om); }
+  // ----- SEGURO DEL PEDAL DERECHO (pasador bajo la palanca) -----
+  // el pasador rojo entra bajo la palanca si la tapa no está apretada por el gancho O si la puerta frontal está abierta
+  const wantLockR = sealed() ? 0 : 1, wantLockD = S.de > 0.03 ? 1 : 0;
+  if (!(wantLockR > S.lockR && S.sR > 0.0025)) S.lockR += clamp(wantLockR - S.lockR, -30 * dt, 30 * dt); // con la palanca abajo, el pasador espera
+  if (!(wantLockD > S.lockD && S.sR > 0.0025)) S.lockD += clamp(wantLockD - S.lockD, -30 * dt, 30 * dt);
+  // ----- PEDAL DERECHO + RUEDA LIBRE + VOLANTE -----
+  const Ff = footForce(S.footR || S.autoPress, S.vR);
+  const Fnet = Ff - (K.F0R + K.kR * S.sR) - 4 * S.vR; // 4 N·s/m: fuelle + roce
+  const brake = S.lat < 0.85 ? K.brake : 0;
+  // par resistente en el eje del volante: roce + freno + corte de las cuchillas (÷5 por el reductor)
+  const tauRes = K.tauC + K.bB * S.wB + brake + S.loadC / T.red;
+  const aR = Fnet / K.mR, aB = S.wB > 1e-4 ? -tauRes / K.IB : 0;
+  let engaged = S.vR * T.G >= S.wB - 1e-6 && aR * T.G > aB && S.vR >= 0 && Fnet > 0;
+  if (engaged) { // la rueda libre traba: pedal y volante se mueven juntos (masa reflejada I·G²)
+    const a = (Fnet - tauRes * T.G) / (K.mR + K.IB * T.G * T.G);
+    if (S.wB <= 1e-4 && a <= 0) { S.vR = 0; S.wB = 0; } // el pie no vence la resistencia estática: no se mueve
+    else { S.vR += a * dt; S.wB = Math.max(0, S.vR * T.G); }
+  } else { S.vR += aR * dt; S.wB = Math.max(0, S.wB + aB * dt); }
+  S.engagedFW = engaged;
+  const sPrev = S.sR; S.sR += S.vR * dt;
+  const blockedR = S.lockR > 0.5 || S.lockD > 0.5, sLim = blockedR ? 0.0015 : T.sMax;
+  if (S.sR > sLim) { S.sR = sLim; S.vR = Math.min(S.vR, 0); if (blockedR && (S.footR || S.autoPress)) { EV.lockBlockR = 1; EV.lockWhyR = S.lockR > 0.5 ? 'lid' : 'door'; } }
+  if (S.sR < 0) { S.sR = 0; S.vR = Math.max(S.vR, 0); }
+  S.thB += S.wB * dt;
+  const pinStep = (S.sR - sPrev) * (T.armRack / T.armPad) / T.rPin;
+  S.thPin += pinStep;
+  if (pinStep < 0) EV.clicks += -pinStep; // trinquetes de la rueda libre al regresar
+  // ----- PEDAL IZQUIERDO: cable → placa dosificadora en U (15 mm) -----
+  const wantLockL = S.de > 0.03 ? 1 : 0;
+  if (!(wantLockL > S.lockL && S.sL > 0.0025)) S.lockL += clamp(wantLockL - S.lockL, -30 * dt, 30 * dt);
+  const FfL = footForce(S.footL, S.vL);
+  const plateF = K.kPlate * S.saw * SAW.travel / ((T.armCable / T.armPad)); // resorte de la placa reflejado al pedal
+  S.vL += (FfL - (K.F0L + K.kL * S.sL) - plateF - 3 * S.vL) / K.mL * dt;
+  S.sL += S.vL * dt;
+  const sLimL = S.lockL > 0.5 ? 0.0015 : T.sMax;
+  if (S.sL > sLimL) { S.sL = sLimL; S.vL = Math.min(0, S.vL); if (S.lockL > 0.5 && S.footL) EV.lockBlockL = 1; }
+  if (S.sL < 0) { S.sL = 0; S.vL = Math.max(0, S.vL); }
+  const sawPrev = S.saw; S.saw = clamp((T.armCable / T.armPad) * S.sL / 0.036, 0, 1); // 36 mm de cable = 15 mm de placa (palanca 2,4:1)
+  if (S.saw < 0.15) S.sawArmed = true; // las celdas vuelven bajo el depósito y se llenan
+  if (sawPrev < 0.9 && S.saw >= 0.9 && S.sawArmed) { S.sawArmed = false; if (S.sawG >= SAW.dose) { S.sawG -= SAW.dose; S.doses++; EV.dose = 1; } else EV.noSaw = 1; }
+  // ----- PUERTA FRONTAL -----
+  const reading = scaleReading();
+  const unlocked = reading >= K.redKg || S.key > 0;
+  if (unlocked) S.doorLatched = false;
+  let tdq = door.m * g * (door.h / 2) * Math.sin(S.de) - (K.tD0 + K.kD * S.de) - K.cD * S.wd;
+  if (S.de < 0.025 && !S.doorLatched) tdq -= 0.25; // imán del empaque
+  if (S.doorHand !== null) tdq += clamp(9 * (S.doorHand - S.de) - 0.5 * S.wd, -8, 8);
+  const deOld = S.de; S.wd += tdq / door.I * dt; let deNew = S.de + S.wd * dt;
+  if (S.doorLatched) deNew = Math.min(deNew, 0.004);
+  if (deNew > Math.PI / 2) { deNew = Math.PI / 2; if (S.wd > 0.8) EV.doorThud = Math.max(EV.doorThud, S.wd * 0.4); S.wd = Math.min(0, S.wd) * -0.1; }
+  if (deNew < 0) { if (S.wd < -0.8) EV.doorThud = Math.max(EV.doorThud, -S.wd * 0.5); deNew = 0; S.wd = 0; }
+  const [deOk, hitD] = solveConstraint(deOld, deNew, v => doorHits(v, S.e));
+  if (hitD) S.wd = 0; S.de = deOk;
+  if (S.de < 0.004 && !unlocked && !S.doorLatched) { S.doorLatched = true; EV.latchClack = 1; }
+  // ----- CAJÓN sobre rieles -----
+  const md = K.mDrawer + (bag.state === 'none' ? 0 : K.mBag) + S.bagMass;
+  let F = -Math.sign(S.ve) * 0.05 * md * g - 2 * S.ve;
+  if (S.drawerHand !== null) F += clamp(320 * (S.drawerHand - S.e) - 28 * S.ve, -70, 70);
+  const eOld = S.e; S.ve += F / md * dt; let eNew = S.e + S.ve * dt;
+  if (eNew > 0.26) { eNew = 0.26; S.ve = Math.min(0, S.ve); }
+  if (eNew < 0) { eNew = 0; S.ve = Math.max(0, S.ve); }
+  const [eOk, hitE] = solveConstraint(eOld, eNew, v => doorHits(S.de, v));
+  if (hitE) S.ve = 0; S.e = eOk;
+  // ----- BÁSCULA: bandeja sobre 4 resortes (masa-resorte-amortiguador) -----
+  const onTray = 1 - smooth(0, 0.012, S.e);
+  const Mt = D.tray.m + md * onTray, c = 2 * 0.28 * Math.sqrt(K.kTray * Mt);
+  S.vx += (Mt * g - K.kTray * S.x - c * S.vx) / Mt * dt; S.x += S.vx * dt;
+  if (S.x > K.trayStop) { S.x = K.trayStop; S.vx = Math.min(0, S.vx); }
+  if (S.key > 0) S.key -= dt;
+}
+function scaleReading() { return (K.kTray * S.x / g) - D.tray.m - tareKg; } // kg de contenido que "ve" la aguja
+
+// ---------- Pedaleo rítmico (el pie baja y sube solo) ----------
+function stepAuto(dt) {
+  if (!S.auto) { S.autoPress = false; return; }
+  S.autoT += dt;
+  if (S.autoPress) { if (S.sR >= T.sMax * 0.97 || S.autoT > 0.55 || ((S.lockR > 0.5 || S.lockD > 0.5) && S.autoT > 0.25)) { S.autoPress = false; S.autoT = 0; } }
+  else if (S.sR < 0.004 && S.autoT > 0.18) { S.autoPress = true; S.autoT = 0; }
+}
+
+// =====================================================================
+//  RESIDUOS: partículas con colisiones reales + montón en la bolsa
+// =====================================================================
+const WT = { // tipo: color, forma (escala x,y,z), radio (m), trabajo para partirlo (J), par resistente en la mordida (N·m)
+  platano: { c: [0xd9b54a, 0x9c7a2e], s: [1.7, 0.35, 0.95], r: 0.017, E: 1.4, tau: 2.6, n: 'cáscara de plátano' },
+  papa: { c: [0xc9a36b, 0xa9824e], s: [1.35, 0.4, 1.0], r: 0.013, E: 0.8, tau: 1.9, n: 'cáscara de papa' },
+  verdura: { c: [0x5f9b3b, 0x7fb24a], s: [1.4, 0.45, 1.1], r: 0.015, E: 0.6, tau: 1.5, n: 'restos de verdura' },
+  fruta: { c: [0xe5812f, 0xd96a26], s: [1.1, 0.8, 1.0], r: 0.015, E: 0.9, tau: 1.8, n: 'cáscara de fruta' },
+  huevo: { c: [0xf0e7d6, 0xe3d3b8], s: [1.1, 0.32, 1.0], r: 0.011, E: 0.35, tau: 1.2, n: 'cáscara de huevo' },
+  tusa: { c: [0xdcc57e, 0xc9ae62], s: [0.9, 0.9, 2.1], r: 0.015, E: 3.6, tau: 6.5, n: 'tusa de mazorca' },
+  cafe: { c: [0x3b2a20, 0x4a3426], s: [1, 1, 1], r: 0.006, E: 0, tau: 0.3, n: 'cuncho de café' },
+  aserrin: { c: [0xd8b47a, 0xc9a266], s: [1.2, 0.6, 1.1], r: 0.0032, E: 0, tau: 0, n: 'aserrín' },
+};
+const R_PASS = 0.0066;
+const E_SCALE = 6;          // ≈180 J por porción de 460 g: unas 15-20 pisadas       // ≤ 13 mm de tamaño: ya pasa entre las cuchillas
+const MAXP = 1400;
+const P = [];                // partículas vivas
+const pGeo = (() => { const gg = new THREE.IcosahedronGeometry(1, 2), p = gg.attributes.position; for (let i = 0; i < p.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(p, i); const n = 1 + 0.22 * Math.sin(v.x * 5.1 + v.y * 3.3) * Math.cos(v.z * 4.7 - v.y * 2.1) + (Math.random() - 0.5) * 0.12; v.multiplyScalar(n); p.setXYZ(i, v.x, v.y, v.z); } gg.computeVertexNormals(); return gg; })();
+const pMat = new THREE.MeshStandardMaterial({ roughness: 0.72, metalness: 0 });
+const pInst = new THREE.InstancedMesh(pGeo, pMat, MAXP); pInst.castShadow = true; pInst.receiveShadow = true; pInst.count = 0; pInst.frustumCulled = false;
+pInst.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(MAXP * 3), 3);
+machine.add(pInst); tag(pInst, info('residuo'));
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _s3 = new THREE.Vector3(), _p3 = new THREE.Vector3(), _col = new THREE.Color();
+
+function spawn(type, x, y, z, r, m, E, vx = 0, vy = 0, vz = 0) {
+  if (P.length >= MAXP) return null;
+  const t = WT[type];
+  const p = { type, x, y, z, vx, vy, vz, r, m, E, E0: E, rx: Math.random() * 6, ry: Math.random() * 6, rz: Math.random() * 6, w: [(Math.random() - .5) * 8, (Math.random() - .5) * 8, (Math.random() - .5) * 8], col: t.c[Math.random() < 0.5 ? 0 : 1], pass: 0, leaf: 0, s: 0, nip: false, shade: 0.85 + Math.random() * 0.3 };
+  P.push(p); return p;
+}
+// una porción de 460 g (lo que entrega un hogar en un día, según el estudio)
+function dropPortion() {
+  const mix = ['platano', 'platano', 'papa', 'papa', 'papa', 'verdura', 'verdura', 'verdura', 'fruta', 'fruta', 'huevo', 'huevo', 'tusa', 'cafe', 'cafe', 'cafe', 'cafe', 'cafe', 'cafe'];
+  const vol = mix.map(k => WT[k].r ** 3), tv = vol.reduce((a, b) => a + b, 0);
+  mix.forEach((k, i) => {
+    const t = WT[k], r = t.r * (0.85 + Math.random() * 0.3);
+    setTimeout(() => spawn(k, (Math.random() - 0.5) * 0.14, 0.72 + Math.random() * 0.12, 0.02 + (Math.random() - 0.5) * 0.1, r, 0.46 * vol[i] / tv, E_SCALE * t.E * (0.8 + Math.random() * 0.4), 0, -0.3, 0), i * 45);
+  });
+}
+function spawnSawdust() {
+  const n = 54, m = SAW.dose / 1000 / n;
+  for (let i = 0; i < n; i++) {
+    const side = i % 3; let x, z, vx = 0, vz = 0; const sp = 0.25 + Math.random() * 0.75;
+    if (side === 0) { x = (Math.random() - 0.5) * 0.3; z = -0.133; vz = sp; }
+    else { x = side === 1 ? -0.152 : 0.152; z = -0.1 + Math.random() * 0.2; vx = (side === 1 ? 1 : -1) * sp; }
+    setTimeout(() => spawn('aserrin', x, 0.289, z, 0.0026 + Math.random() * 0.0014, m, 0, vx, -0.1, vz), Math.random() * 180);
+  }
+}
+function split(p) { // la cuchilla parte el trozo en dos (la pulpa se compacta: 50-60 % menos volumen)
+  const n = 2, r2 = p.r * 0.72;
+  for (let k = 0; k < n; k++) {
+    const q = spawn(p.type, p.x + (k ? 1 : -1) * r2 * 0.6, p.y, p.z + (Math.random() - .5) * 0.004, r2, p.m / n, p.E0 * 0.5, 0, -0.05, 0);
+    if (q) q.col = p.col;
+  }
+  p.dead = true; S.crushedTotal += p.m;
+}
+
+// ---------- Montón (campo de alturas) dentro de la bolsa ----------
+const HP = { NX: 34, NZ: 30, w: 0.326, d: 0.286, base: 0.0375, rho: 600, dirty: true };
+HP.cx = HP.w / (HP.NX - 1); HP.cz = HP.d / (HP.NZ - 1); HP.h = new Float32Array(HP.NX * HP.NZ); HP.cov = new Float32Array(HP.NX * HP.NZ);
+HP.cap = D.dr.h + 0.016 - HP.base;
+const heapGeo = new THREE.PlaneGeometry(HP.w, HP.d, HP.NX - 1, HP.NZ - 1); heapGeo.rotateX(-Math.PI / 2);
+{ const cols = new Float32Array(heapGeo.attributes.position.count * 3); for (let i = 0; i < cols.length; i += 3) { const v = 0.8 + Math.random() * 0.4; cols[i] = v; cols[i + 1] = v * (0.92 + Math.random() * 0.12); cols[i + 2] = v * 0.9; } heapGeo.setAttribute('color', new THREE.BufferAttribute(cols, 3)); heapGeo.userData.base = Float32Array.from(cols); }
+const heapTex = canvasTex(256, 256, (x, W, H) => {
+  x.fillStyle = '#6b4a2e'; x.fillRect(0, 0, W, H);
+  const cols = ['#4e3420', '#7a5634', '#5d6b2c', '#8a6a2a', '#3a2a1c', '#a0762e', '#6f7d34', '#c28b3c'];
+  for (let i = 0; i < 2600; i++) { x.fillStyle = cols[i % cols.length]; x.globalAlpha = 0.35 + Math.random() * 0.5; const r = 1 + Math.random() * 4; x.beginPath(); x.ellipse(Math.random() * W, Math.random() * H, r, r * (0.4 + Math.random()), Math.random() * 3, 0, 6.3); x.fill(); }
+}, [3, 3]);
+const heapMesh = mesh(heapGeo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, map: heapTex, bumpMap: heapTex, bumpScale: 2.5 }));
+heapMesh.visible = false; bag.grp.add(tag(heapMesh, info('monton')));
+function heapLocal(xl, zl) {
+  const fx = (xl + HP.w / 2) / HP.cx, fz = (zl + HP.d / 2) / HP.cz;
+  if (fx < 0 || fz < 0 || fx > HP.NX - 1 || fz > HP.NZ - 1) return 0;
+  const i = Math.min(HP.NX - 2, Math.floor(fx)), j = Math.min(HP.NZ - 2, Math.floor(fz)), u = fx - i, v = fz - j, H = HP.h, N = HP.NX;
+  return lerp(lerp(H[j * N + i], H[j * N + i + 1], u), lerp(H[(j + 1) * N + i], H[(j + 1) * N + i + 1], u), v);
+}
+heapWorldY = (x, z) => {
+  if (bag.state === 'removing' || S.e > 0.02) return -1;
+  const zl = z - drawer.grp.position.z, h = heapLocal(x, zl);
+  return h > 0.0005 ? drawer.grp.position.y + HP.base + h : -1;
+};
+function heapAdd(xl, zl, mass, saw = false) {
+  const V = mass / (saw ? 200 : HP.rho), fx = (xl + HP.w / 2) / HP.cx, fz = (zl + HP.d / 2) / HP.cz, R = 2.2, N = HP.NX;
+  let W = 0; const cells = [];
+  for (let j = Math.floor(fz - R); j <= Math.ceil(fz + R); j++) for (let i = Math.floor(fx - R); i <= Math.ceil(fx + R); i++) {
+    if (i < 0 || j < 0 || i >= N || j >= HP.NZ) continue; const d2 = (i - fx) ** 2 + (j - fz) ** 2; if (d2 > R * R) continue;
+    const w = Math.exp(-d2 / 1.6); W += w; cells.push([j * N + i, w]);
+  }
+  const A = HP.cx * HP.cz; for (const [k, w] of cells) { const dh = V * w / W / A; HP.h[k] += dh; HP.cov[k] = clamp(HP.cov[k] + (saw ? dh / 0.0012 : -dh / 0.002), 0, 1); }
+  S.bagMass += mass; HP.dirty = true;
+}
+function heapRelax(iter) { // talud natural de la pulpa ≈ 42°
+  const N = HP.NX, M2 = HP.NZ, H = HP.h, mx = Math.tan(42 * Math.PI / 180) * HP.cx;
+  for (let it = 0; it < iter; it++) {
+    let moved = false;
+    for (let j = 0; j < M2; j++) for (let i = 0; i < N; i++) {
+      const k = j * N + i;
+      if (H[k] > HP.cap) { const ex = H[k] - HP.cap; H[k] = HP.cap; spreadAround(i, j, ex); }
+      for (const [di, dj] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) {
+        const ii = i + di, jj = j + dj; if (ii < 0 || jj < 0 || ii >= N || jj >= M2) continue;
+        const kk = jj * N + ii, diff = H[k] - H[kk];
+        if (diff > mx) { const t = (diff - mx) * 0.22; H[k] -= t; H[kk] += t; moved = true; }
+      }
+    }
+    if (!moved) break; HP.dirty = true;
+  }
+}
+function spreadAround(i, j, ex) { const N = HP.NX, nb = []; for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const ii = i + di, jj = j + dj; if ((di || dj) && ii >= 0 && jj >= 0 && ii < N && jj < HP.NZ && HP.h[jj * N + ii] < HP.cap) nb.push(jj * N + ii); } if (!nb.length) return; nb.forEach(k => HP.h[k] += ex / nb.length); }
+function heapUpdateMesh() {
+  if (!HP.dirty) return; HP.dirty = false;
+  const pos = heapGeo.attributes.position, col = heapGeo.attributes.color, base = heapGeo.userData.base; let any = false;
+  for (let j = 0; j < HP.NZ; j++) for (let i = 0; i < HP.NX; i++) {
+    const k = j * HP.NX + i, h = HP.h[k], c = HP.cov[k]; if (h > 0.0008) any = true;
+    pos.setY(k, h > 0.0008 ? HP.base + h : HP.base - 0.004);
+    col.setXYZ(k, lerp(base[k * 3], 2.0, c), lerp(base[k * 3 + 1], 1.62, c), lerp(base[k * 3 + 2], 1.05, c));
+  }
+  pos.needsUpdate = true; col.needsUpdate = true; heapGeo.computeVertexNormals(); heapMesh.visible = any;
+}
+function heapReset() { HP.h.fill(0); HP.cov.fill(0); S.bagMass = 0; HP.dirty = true; }
+function addDays(days) { // material ya molido de días anteriores
+  const kg = 0.46 * days;
+  for (let i = 0; i < 40; i++) heapAdd((Math.random() - .5) * 0.06, (Math.random() - .5) * 0.06 + (-drawer.grp.position.z + 0.0), kg / 40);
+  heapRelax(400);
+  for (let k = 0; k < HP.h.length; k++) if (HP.h[k] > 0.002) HP.cov[k] = 1; // cada día se cubrió con su dosis
+  S.x = (D.tray.m + tareKg + S.bagMass) * g / K.kTray; S.vx = 0; // días de uso: la bandeja ya está en reposo
+}
+
+// ---------- Paso de partículas ----------
+const PH = { mu: 0.8, muK: 0.45 };
+const hash = new Map();
+function stepParticles(dt) {
+  const R = D.roll, G = D.gate, wC = -S.wB / T.red; // rodillo delantero gira en −x
+  const turning = Math.abs(wC) > 0.25;
+  let loadC = 0; const nipList = [];
+  const lidClosedish = S.th < 0.35;
+  for (const p of P) {
+    if (p.dead) continue;
+    p.nip = false;
+    if (p.refill) { p.vy -= g * dt; p.y += p.vy * dt; if (p.y < 0.63) p.dead = true; continue; }
+    if (p.pass > 0) { // atravesando la mordida de los rodillos
+      if (p.y < R.y - 0.042) p.pass = 0; p.vx *= 0.9; p.vz = -p.z * 20; p.vy = -Math.max(0.25, Math.abs(wC) * 0.033);
+      p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt; continue;
+    }
+    p.px = p.x; p.py = p.y; p.pz = p.z;
+    p.vy -= g * dt; const dmp = 1 - 0.25 * dt; p.vx *= dmp; p.vy *= dmp; p.vz *= dmp;
+    p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
+    // tapa cerrándose sobre la boca: empuja hacia adentro
+    if (p.y > D.frameTop - p.r && lidClosedish) { p.y = D.frameTop - p.r; p.vy = Math.min(p.vy, 0); }
+    // paredes: boca/tolva, cámara
+    if (p.y > 0.598) { const b = D.boca / 2 - p.r; if (p.y < D.frameTop + 0.2) { p.x = clamp(p.x, -b, b); p.z = clamp(p.z, -b, b); } }
+    else if (p.y > D.ch.y0 - 0.01) { const bx = D.ch.hx - p.r, bz = D.ch.hz - p.r; if (Math.abs(p.x) > bx) { p.x = Math.sign(p.x) * bx; p.vx *= -0.2; } if (Math.abs(p.z) > bz) { p.z = Math.sign(p.z) * bz; p.vz *= -0.2; } }
+    // deflector y guías (placas inclinadas en el plano y-z)
+    for (const gd of D.guides) plate(p, gd.a, gd.b, D.ch.hx, 0.35);
+    // rodillos: cilindros de contacto (radio efectivo entre cuchilla y separador)
+    if (p.y > R.y - 0.06 && p.y < R.y + 0.08) {
+      let touch = 0;
+      for (const sgn of [1, -1]) {
+        const zc = sgn * R.z, qy = p.y - R.y, qz = p.z - zc, dd = Math.hypot(qy, qz), Re = 0.033;
+        if (dd < Re + p.r) {
+          touch++;
+          const ny = qy / dd, nz = qz / dd, pen = Re + p.r - dd; p.y += ny * pen; p.z += nz * pen;
+          const vn = p.vy * ny + p.vz * nz; if (vn < 0) { p.vy -= vn * ny * 1.1; p.vz -= vn * nz * 1.1; }
+          const w = sgn > 0 ? wC : -wC; // el trasero gira al revés (engranajes 1:1)
+          const sy = -w * Re * nz, sz = w * Re * ny; // velocidad de la superficie
+          const grip = turning ? 0.12 : 0.04; p.vy += (sy - p.vy) * grip; p.vz += (sz - p.vz) * grip;
+        }
+      }
+      if (touch === 2 || (Math.abs(p.z) < 0.012 && p.y < R.y + 0.045 && p.y > R.y - 0.01 && touch)) {
+        p.nip = true;
+        if (turning) {
+          if (p.r <= R_PASS) { p.pass = 1; }
+          else nipList.push(p);
+        }
+      }
+    }
+    // dentro del cajón: paredes de la bolsa y montón
+    if (p.y < D.ch.y0 - 0.005) {
+      const zc = drawer.grp.position.z;
+      if (S.e < 0.02 && bag.state !== 'removing') {
+        const bx = D.dr.w / 2 - 0.01 - p.r, bz = D.dr.d / 2 - 0.01 - p.r;
+        p.x = clamp(p.x, -bx, bx); p.z = clamp(p.z, zc - bz, zc + bz);
+        const hy = heapWorldY(p.x, p.z), floorY = drawer.grp.position.y + HP.base;
+        if (p.y - p.r * 0.5 <= Math.max(hy, floorY)) { heapAdd(p.x, p.z - zc, p.m, p.type === 'aserrin'); S.vx += p.m * Math.max(0, -p.vy) / (D.tray.m + K.mDrawer + S.bagMass); p.dead = true; continue; }
+      } else if (p.y < 0.07) { S.spilled += p.m; p.dead = true; continue; }
+    }
+    if (p.y < p.r) { p.y = p.r; p.vy = 0; p.vx *= 0.8; p.vz *= 0.8; }
+    const sp = Math.hypot(p.vx, p.vy, p.vz); p.rx += p.w[0] * dt * Math.min(1, sp * 3); p.ry += p.w[1] * dt * Math.min(1, sp * 3); p.rz += p.w[2] * dt * Math.min(1, sp * 3);
+  }
+  // choques entre trozos (retícula espacial): permite que se apilen sobre la compuerta y en los rodillos
+  hash.clear(); const cs = 0.016;
+  for (let i = 0; i < P.length; i++) { const p = P[i]; if (p.dead || p.pass > 0 || p.y < D.roll.y - 0.05) continue; const k = (Math.floor(p.x / cs) * 92837111) ^ (Math.floor(p.y / cs) * 689287499) ^ (Math.floor(p.z / cs) * 283923481); let a = hash.get(k); if (!a) hash.set(k, a = []); a.push(i); }
+  for (let i = 0; i < P.length; i++) {
+    const p = P[i]; if (p.dead || p.pass > 0 || p.y < D.roll.y - 0.05) continue;
+    const ix = Math.floor(p.x / cs), iy = Math.floor(p.y / cs), iz = Math.floor(p.z / cs);
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+      const arr = hash.get(((ix + a) * 92837111) ^ ((iy + b) * 689287499) ^ ((iz + c) * 283923481)); if (!arr) continue;
+      for (const j of arr) {
+        if (j <= i) continue; const q = P[j]; if (q.dead || q.pass > 0) continue;
+        const dx = q.x - p.x, dy = q.y - p.y, dz = q.z - p.z, rr = (p.r + q.r) * 0.82, d2 = dx * dx + dy * dy + dz * dz;
+        if (d2 < rr * rr && d2 > 1e-10) {
+          const d = Math.sqrt(d2), nx = dx / d, ny = dy / d, nz = dz / d, pen = (rr - d) * 0.5;
+          p.x -= nx * pen; p.y -= ny * pen; p.z -= nz * pen; q.x += nx * pen; q.y += ny * pen; q.z += nz * pen;
+          const rv = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny + (q.vz - p.vz) * nz;
+          if (rv < 0) { const im = rv * 0.5; p.vx += nx * im; p.vy += ny * im; p.vz += nz * im; q.vx -= nx * im; q.vy -= ny * im; q.vz -= nz * im; }
+        }
+      }
+    }
+  }
+  // las cuchillas cortan a la vez como máximo los dos trozos más hondos de la mordida
+  nipList.sort((a, b) => a.y - b.y);
+  for (let i = 0; i < Math.min(2, nipList.length); i++) {
+    const p = nipList[i], tq = WT[p.type].tau * Math.pow(p.r / WT[p.type].r, 1.5); loadC += tq; // par ∝ sección del trozo
+    p.E -= tq * Math.abs(wC) * dt; p.rx += 0.4; if (p.E <= 0) split(p);
+  }
+  if (nipList.length && !turning) loadC = 0;
+  S.loadC = loadC;
+  for (let i = P.length - 1; i >= 0; i--) if (P[i].dead) P.splice(i, 1);
+}
+function plate(p, a, b, hw, mu) {
+  if (Math.abs(p.x) > hw) return;
+  const ty = b.y - a.y, tz = b.z - a.z, L2 = ty * ty + tz * tz, t = ((p.y - a.y) * ty + (p.z - a.z) * tz) / L2;
+  if (t < 0 || t > 1) return;
+  const L = Math.sqrt(L2); let ny = -tz / L, nz = ty / L; if (ny < 0) { ny = -ny; nz = -nz; }
+  const d = (p.y - a.y) * ny + (p.z - a.z) * nz, dp = ((p.py ?? p.y) - a.y) * ny + ((p.pz ?? p.z) - a.z) * nz;
+  const side = dp >= 0 ? 1 : -1; // de qué lado venía: la placa tiene dos caras y no se atraviesa
+  if (side * d < p.r) {
+    ny *= side; nz *= side; const dd = d * side;
+    p.y += ny * (p.r - dd); p.z += nz * (p.r - dd);
+    const vn = p.vy * ny + p.vz * nz; if (vn < 0) { p.vy -= vn * ny * 1.15; p.vz -= vn * nz * 1.15; }
+    // rozamiento de Coulomb sobre la placa (μ ≈ 0,35 pulpa húmeda sobre inox)
+    const vn2 = p.vy * ny + p.vz * nz, ty2 = p.vy - vn2 * ny, tz2 = p.vz - vn2 * nz, vt = Math.hypot(ty2, tz2, p.vx);
+    if (vt > 1e-5) { const k = Math.max(0, 1 - mu * g * Math.abs(ny) * (1 / 180) / vt); p.vy = vn2 * ny + ty2 * k; p.vz = vn2 * nz + tz2 * k; p.vx *= k; }
+  }
+}
+function drawParticles() {
+  let n = 0;
+  for (const p of P) {
+    const t = WT[p.type], sc = p.r * (p.nip ? 0.94 + Math.random() * 0.08 : 1);
+    _q.setFromEuler(_e.set(p.rx, p.ry, p.rz)); _s3.set(t.s[0] * sc, t.s[1] * sc, t.s[2] * sc);
+    _m4.compose(_p3.set(p.x, p.y, p.z), _q, _s3); pInst.setMatrixAt(n, _m4);
+    _col.setHex(p.col).multiplyScalar(p.shade * (p.r < 0.009 ? 0.82 : 1)); pInst.setColorAt(n, _col); n++;
+  }
+  pInst.count = n; pInst.instanceMatrix.needsUpdate = true; if (pInst.instanceColor) pInst.instanceColor.needsUpdate = true;
+}
+
+// =====================================================================
+//  SINCRONÍA VISUAL: cada pieza toma su posición del estado físico
+// =====================================================================
+const _pa = new THREE.Vector3(), _pb = new THREE.Vector3(), _pc = new THREE.Vector3(), _pd = new THREE.Vector3();
+const alphaOf = (s) => Math.asin(clamp((T.restH - s) / T.armPad, -1, 1)); // ángulo de la palanca del pedal
+const leverY = (a, z) => T.pivY + (z - T.pivZ) * Math.sin(a);
+TR.phA = 0.18;
+const xTare = () => (D.tray.m + tareKg) * g / K.kTray;
+function updateVisuals(dt) {
+  // --- tapa y gancho ---
+  lid.pivot.rotation.x = -S.th;
+  latch.pivot.rotation.x = -1.9 * (1 - S.lat);
+  latchAttach(S.lat, _pa);
+  if (S.engaged) unaPos(S.th, _pb); else _pb.copy(_pa).add(_pc.set(0, S.lat > 0.5 ? 0.058 : 0.04, S.lat > 0.5 ? 0.01 : 0.035));
+  rodBetween(latch.bailL, _pc.set(-0.018, _pa.y, _pa.z), _pd.set(-0.018, _pb.y, _pb.z));
+  rodBetween(latch.bailR, _pc.set(0.018, _pa.y, _pa.z), _pd.set(0.018, _pb.y, _pb.z));
+  rodBetween(latch.bailT, _pc.set(-0.019, _pb.y, _pb.z), _pd.set(0.019, _pb.y, _pb.z));
+  // --- sistema rojo: el pulsador baja 4 mm solo con la tapa apretada ---
+  const dep = sealed() ? 0.004 : (S.th < K.thSeat + 0.003 ? 0.0012 : 0);
+  SAFE.plunger.position.y = D.frameTop - 0.019 - dep; SAFE.arm.position.y = D.frameTop - 0.026 - dep;
+  rodBetween(SAFE.rod, _pa.set(0.183, 0.1, 0.186), _pb.set(0.183, D.frameTop - 0.026 - dep, 0.186));
+  SAFE.crank.rotation.z = -0.35 * (1 - S.lockR);
+  TR.lockR.position.set(lerp(0.196, 0.229, S.lockR), 0.0745, 0.175);
+  // --- pedal derecho, cremallera, resorte, fuelle ---
+  const aR = alphaOf(S.sR); TR.pedR.rotation.x = -aR;
+  const yAtt = leverY(aR, T.zRack);
+  TR.rack.position.set(0.214, yAtt + 0.012, T.zRack);
+  rodBetween(TR.rackLink, _pa.set(T.xR - 0.006, yAtt, T.zRack), _pb.set(0.214, yAtt + 0.014, T.zRack));
+  rodBetween(TR.retLeg, _pa.set(T.xR + 0.012, T.pivY + 0.011, T.pivZ), _pb.set(T.xR + 0.006, leverY(aR, T.pivZ + 0.05) + 0.006, T.pivZ + 0.05));
+  TR.lockD.position.set(lerp(0.196, 0.229, S.lockD), 0.0775, 0.19);
+  TR.doorPlg.forEach(m => m.position.z = 0.176 + 0.008 * S.lockD);
+  rodBetween(TR.lockDLink, _pa.set(0.176, 0.075, 0.178 + 0.008 * S.lockD), _pb.set(0.19, 0.0775, 0.19));
+  rodBetween(TR.lockLLink, _pa.set(-0.176, 0.075, 0.178 + 0.008 * S.lockD), _pb.set(-0.19, 0.0745, 0.175));
+  const yBl = leverY(aR, -0.05) + 0.006; TR.bellows.position.set(T.xR, yBl, -0.05); TR.bellows.scale.y = 0.110 - yBl;
+  SAW.valveFlap.position.z = -D.DP / 2 - 0.011 - (S.vR < -0.02 ? 0.003 : 0); // la membrana se abre cuando el fuelle expulsa
+  // --- tren de engranajes y cadena ---
+  const rC = S.thB / T.red;
+  TR.pinA.rotation.x = TR.phA + S.thPin; TR.ratchet.rotation.x = S.thB / 3; TR.pawls.rotation.x = S.thPin;
+  { const pitch = TAU / 12, rel = (((S.thPin - S.thB / 3) % pitch) + pitch) % pitch; TR.pawlArms.forEach(a => a.rotation.x = S.engagedFW ? 0 : 0.3 * rel / pitch); }
+  TR.spA.rotation.x = S.thB / 3; TR.spB.rotation.x = S.thB; TR.fly.rotation.x = S.thB;
+  TR.pinB.rotation.x = TR.phPB + S.thB; TR.gearC.rotation.x = TR.phC - rC;
+  rollF.rotation.x = -rC; rollR.rotation.x = rC;
+  TR.syncF.rotation.x = TR.phF - rC; TR.syncR.rotation.x = TR.phR + rC;
+  TR.brake.position.y = T.yB + (S.lat < 0.85 ? 0.0745 : 0.079);
+  const s0 = -S.thB * (8 * 0.0127 / TAU);
+  for (let i = 0; i < TR.chainN; i++) {
+    let [z, y, a] = TR.chainAt(s0 + i * TR.chainPitch);
+    _q.setFromAxisAngle(_p3.set(1, 0, 0), -a); _m4.compose(_pa.set(TR.chainX + (i % 2 ? 0.0012 : -0.0012), y, z), _q, _s3.set(i % 2 ? 1 : 0.8, 1, 1)); TR.chain.setMatrixAt(i, _m4);
+    [z, y] = TR.chainAt(s0 + (i + 0.5) * TR.chainPitch); _m4.compose(_pa.set(TR.chainX, y, z), _q.identity(), _s3.set(1, 1, 1)); TR.chainPins.setMatrixAt(i, _m4);
+  }
+  TR.chain.instanceMatrix.needsUpdate = true; TR.chainPins.instanceMatrix.needsUpdate = true;
+  // --- pedal izquierdo → cable → placa dosificadora de aserrín ---
+  const aL = alphaOf(S.sL); TR.pedL.rotation.x = -aL;
+  rodBetween(TR.retLegL, _pa.set(T.xL - 0.012, T.pivY + 0.011, T.pivZ), _pb.set(T.xL - 0.006, leverY(aL, T.pivZ + 0.05) + 0.006, T.pivZ + 0.05));
+  TR.lockL.position.set(lerp(-0.196, -0.215, S.lockL), 0.0745, 0.175);
+  SAW.plate.position.z = S.saw * SAW.travel;
+  const yc = leverY(aL, 0.15) + 0.004;
+  rodBetween(SAW.cableV, _pa.set(-0.2, yc, 0.183), _pb.set(-0.2, 0.30, 0.183));
+  rodBetween(SAW.cableH, _pa.set(-0.2, 0.311, 0.172), _pb.set(-0.178, SAW.plateY + 0.002, 0.125 + S.saw * SAW.travel));
+  SAW.spring.position.set(-0.17, SAW.plateY + 0.002, -0.147 + S.saw * SAW.travel); SAW.spring.scale.y = 0.03 + (1 - S.saw) * 0.0;
+  const lvl = clamp(S.sawG / SAW.cap, 0, 1), fh = Math.max(0.001, lvl * (SAW.y1 - SAW.y0 - 0.01));
+  SAW.fills.forEach(f => { f.scale.y = fh; f.position.y = SAW.y0 + 0.002 + fh / 2; f.visible = lvl > 0.005; });
+  { // tapa del aserrín: gira sobre su borde trasero (resorte-amortiguador hacia el ángulo pedido); no puede atravesar la tapa principal
+    const lim = S.th > 1.2 ? 1.35 : 0; const tgt = Math.min(hatch.aT, lim);
+    hatch.w += (40 * (tgt - hatch.a) - 9 * hatch.w) * dt; hatch.a = clamp(hatch.a + hatch.w * dt, 0, 1.35); if (hatch.a <= 0 && hatch.w < 0) hatch.w = 0;
+    if (S.th < 1.2 && hatch.a > 0.02) { S.th = Math.max(S.th, 1.2); } // la tapa principal choca con la de recarga: no puede cerrarse encima
+    hatch.grp.rotation.x = -hatch.a;
+    if (hatch.pour > 0) { hatch.pour -= dt; S.sawG = Math.min(SAW.cap, S.sawG + (SAW.cap / 1.6) * dt); if (Math.random() < 0.9) for (let k = 0; k < 3; k++) { const side = Math.floor(Math.random() * 3); const x = side === 0 ? (Math.random() - 0.5) * 0.3 : (side === 1 ? -0.154 : 0.154), z = side === 0 ? -0.135 : -0.1 + Math.random() * 0.2; const p = spawn('aserrin', x, 0.78 + Math.random() * 0.05, z, 0.003, 0, 0, 0, -0.5, 0); if (p) p.refill = true; } }
+  }
+  // --- puerta, cajón, báscula ---
+  door.pivot.rotation.x = S.de;
+  const tt = trayTop(); tray.grp.position.y = tt - 0.003;
+  tray.springs.forEach(s => s.scale.y = (tt - 0.006) - D.baseTop);
+  drawer.grp.position.set(0, drawerY(S.e), D.dr.z0 + D.dr.d / 2 + S.e);
+  // --- sistema azul: bandeja → alambre → palanca en L cuyo brazo largo es la flecha ---
+  const dRel = Math.max(-0.001, S.x - xTare());                  // cuánto bajó la bandeja por el contenido (1 mm por kg)
+  const th = clamp(dRel / gauge.arm, -0.02, gauge.sweep * 1.03);  // giro de la palanca: el alambre tira del brazo de 9 mm
+  gauge.arrow.rotation.z = gauge.a0 - th; gauge.inArm.rotation.z = -th;
+  rodBetween(gauge.push, _pa.set(0.179, tt + 0.002, 0.165), _pb.set(gauge.P.x + gauge.arm * Math.cos(-th), gauge.P.y + gauge.arm * Math.sin(-th), gauge.zB));
+  const lowEnd = _pc.set(gauge.P.x + 0.022 * Math.sin(th), gauge.P.y - 0.022 * Math.cos(th), gauge.zB);
+  rodBetween(gauge.tripRod, lowEnd, _pd.set(0.154, 0.31, 0.176));
+  gauge.pawl.rotation.x = S.doorLatched ? 0 : -0.5;
+  updateBag(dt); updateSacks(dt);
+  heapUpdateMesh();
+  drawParticles();
+  updateSeals();
+  updateOdor(dt);
+}
+// ---------- Bolsa: se cierra con su cordón al tomarla ----------
+function bagShape(c, lift) {
+  const pos = bag.side.geometry.attributes.position, b = bag.side.userData.base;
+  for (let i = 0; i < pos.count; i++) {
+    const x = b[i * 3], y = b[i * 3 + 1], z = b[i * 3 + 2], f = (y - 0.006) / bag.bh, k = f > 0.5 ? (f - 0.5) / 0.5 : 0, sq = 1 - c * k * 0.93;
+    pos.setXYZ(i, x * sq, y + c * 0.07 * k * k, z * sq);
+  }
+  pos.needsUpdate = true; bag.side.geometry.computeVertexNormals();
+  bag.rim.scale.set(1 - c * 0.93, 1, 1 - c * 0.93); bag.rim.position.y = D.dr.h + 0.001 + c * 0.07;
+  bag.cord.scale.copy(bag.rim.scale); bag.cord.position.y = D.dr.h - 0.004 + c * 0.07;
+  bag.grp.position.y = lift;
+}
+function updateBag(dt) {
+  if (bag.state === 'inserting') {
+    bag.t += dt; bag.grp.visible = true; const d = 1 - smooth(0, 1.1, bag.t);
+    bagShape(d * 0.7, d * 0.3);
+    if (bag.t > 1.15) { bag.state = 'in'; bagShape(0, 0); toast('Bolsa nueva puesta: el borde elástico encaja en la ranura del reborde del cajón.'); }
+  }
+}
+// ---------- Sacos llenos: se toman con la mano y caen al piso con gravedad ----------
+const SACKS = [];
+const M_SACK = new THREE.MeshPhysicalMaterial({ color: 0x4a7a31, roughness: 0.5, bumpMap: wrinkle, bumpScale: 1.4, clearcoat: 0.4, clearcoatRoughness: 0.3, sheen: 0.15, sheenColor: 0xcfe8b0 });
+function sackGeo(fill, cinch) { // saco de 20 L: base plana, hombros redondos y cuello fruncido por el cordón
+  const H = 0.16 + 0.17 * fill, R0 = 0.13 + 0.025 * fill, pts = [];
+  for (let i = 0; i <= 24; i++) {
+    const t = i / 24; let r;
+    if (t < 0.08) r = R0 * (0.82 + 0.18 * Math.sin(t / 0.08 * Math.PI / 2));
+    else if (t < 0.62) r = R0 * (1 - 0.04 * Math.sin((t - 0.08) / 0.54 * Math.PI));
+    else if (t < 0.9) { const u = (t - 0.62) / 0.28; r = lerp(R0, 0.022, Math.pow(u, 0.8 + 0.6 * cinch)); }
+    else r = lerp(0.022, 0.03, (t - 0.9) / 0.1);
+    pts.push(new THREE.Vector2(Math.max(0.012, r), t * H));
+  }
+  const g2 = new THREE.LatheGeometry(pts, 40), pos = g2.attributes.position, uv = g2.attributes.uv;
+  for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i), t = y / H, a = Math.atan2(z, x); const fold = 1 + (0.07 * Math.sin(a * 9) + 0.03 * Math.sin(a * 17 + 1)) * smooth(0.55, 0.9, t) + 0.015 * Math.sin(a * 5 + t * 9) * (1 - t); pos.setXYZ(i, x * fold, y, z * fold); uv.setXY(i, uv.getX(i) * 5, uv.getY(i) * 2.5); }
+  g2.computeVertexNormals(); return [g2, H];
+}
+function grabBag(hitPoint) {
+  if (bag.state !== 'in' || S.e < 0.24) return null;
+  const fill = clamp(S.bagMass / 11, 0.05, 1), [geo, H] = sackGeo(fill, 1);
+  const grp = new THREE.Group(), m = mesh(geo, M_SACK); grp.add(m);
+  const knot = new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.004, 8, 16), M.cord); knot.position.y = H + 0.01; knot.rotation.x = Math.PI / 2; grp.add(knot);
+  const cords = [0, 1].map(k => { const c = rod(0.0015, M.cord); c.position.set(k ? 0.012 : -0.012, H + 0.03, 0); c.scale.y = 0.05; c.rotation.z = k ? -0.5 : 0.5; grp.add(c); return c; });
+  drawer.grp.getWorldPosition(_pa); grp.position.set(_pa.x, _pa.y + 0.02, _pa.z);
+  const sk = { grp, x: _pa.x, y: _pa.y + 0.02, z: _pa.z, vx: 0, vy: 0, vz: 0, held: true, m: S.bagMass, H, R: 0.14 + 0.025 * fill, tx: _pa.x, ty: _pa.y + 0.25, tz: _pa.z };
+  tag(grp, info('saco')); grp.traverse(o => { if (o.isMesh) o.userData.sack = sk; }); machine.add(grp); SACKS.push(sk);
+  toast(`Tiras del cordón: la bolsa se cierra sola y la levantas (${fmt(S.bagMass)} kg). Suéltala en el piso, al lado del equipo.`);
+  heapReset(); bag.state = 'none'; bag.grp.visible = false; audioInit(); blip(420, 0.08, 0.08, 'triangle');
+  return sk;
+}
+function updateSacks(dt) {
+  const mbx0 = D.chanL.x0 - 0.005, mbx1 = D.carter.x1 + 0.005, mbz0 = -D.DP / 2 - 0.02;
+  for (const s of SACKS) {
+    if (s.held) { const k = 60, c = 12; s.vx += (k * (s.tx - s.x) - c * s.vx) * dt; s.vy += (k * (s.ty - s.y) - c * s.vy) * dt; s.vz += (k * (s.tz - s.z) - c * s.vz) * dt; }
+    else s.vy -= g * dt;
+    s.x += s.vx * dt; s.y += s.vy * dt; s.z += s.vz * dt;
+    if (s.y < 0) { if (s.vy < -1) thud(Math.min(0.5, -s.vy * 0.15), 70); s.y = 0; s.vy = Math.max(0, -s.vy * 0.15); s.vx *= 0.8; s.vz *= 0.8; }
+    // no atraviesa el equipo: se empuja fuera de su huella (incluye puerta y cajón abiertos)
+    const mbz1 = D.DP / 2 + Math.max(0.03, S.de > 0.3 ? 0.27 : 0, S.e + 0.02);
+    if (s.y < 0.66) {
+      const px0 = s.x + s.R - mbx0, px1 = mbx1 - (s.x - s.R), pz0 = s.z + s.R - mbz0, pz1 = mbz1 - (s.z - s.R);
+      if (px0 > 0 && px1 > 0 && pz0 > 0 && pz1 > 0) { const m = Math.min(px0, px1, pz0, pz1); if (m === px0) { s.x -= px0; s.vx = Math.min(0, s.vx); } else if (m === px1) { s.x += px1; s.vx = Math.max(0, s.vx); } else if (m === pz0) { s.z -= pz0; s.vz = Math.min(0, s.vz); } else { s.z += pz1; s.vz = Math.max(0, s.vz); } }
+    }
+    for (const o of SACKS) if (o !== s) { const dx = s.x - o.x, dz = s.z - o.z, d = Math.hypot(dx, dz), rr = s.R + o.R; if (d < rr && d > 1e-4 && Math.abs(s.y - o.y) < 0.2) { const p = (rr - d) / 2; s.x += dx / d * p; s.z += dz / d * p; o.x -= dx / d * p; o.z -= dz / d * p; } }
+    s.grp.position.set(s.x, s.y, s.z); s.grp.rotation.set(clamp(s.vz * 0.4, -0.4, 0.4), 0, clamp(-s.vx * 0.4, -0.4, 0.4));
+  }
+}
+// ---------- Sellos (resaltado) ----------
+const VIEW = { seals: false };
+const cG = new THREE.Color(0x1d8a3a), cA = new THREE.Color(0xb07a10), cRd = new THREE.Color(0xb3261e), cK = new THREE.Color(0);
+const epdmLid = M.epdm.clone(), epdmDoor = M.epdm.clone();
+lid.seal.material = epdmLid; door.pivot.traverse(o => { if (o.isMesh && o.material === M.epdm) o.material = epdmDoor; });
+function updateSeals() {
+  const on = VIEW.seals;
+  epdmLid.emissive.copy(!on ? cK : sealed() ? cG : S.th < K.thSeat + 0.003 ? cA : cRd);
+  epdmDoor.emissive.copy(!on ? cK : S.de < 0.01 ? cG : cRd);
+}
+
+// =====================================================================
+//  DESPIECE: todas las piezas se separan con una animación escalonada
+// =====================================================================
+const EXPL = { list: [], u: 0, target: 0, parts: [] };
+const _bb = new THREE.Box3(), _bc = new THREE.Vector3(), _bs = new THREE.Vector3(), CEN = new THREE.Vector3(0.01, 0.33, 0);
+function keyOf(o) { let k = null; o.traverse(m => { if (!k && m.userData.info) k = m.userData.info.key; }); return k; }
+function addExp(obj, off, delay) { EXPL.list.push({ obj, off, delay, applied: new THREE.Vector3() }); }
+function panelOff(o, dist) { // se mueve hacia afuera por su cara más delgada
+  _bb.setFromObject(o); _bb.getCenter(_bc); _bb.getSize(_bs); const r = _bc.clone().sub(CEN);
+  const ax = _bs.x < _bs.y && _bs.x < _bs.z ? 'x' : _bs.y < _bs.z ? 'y' : 'z'; const v = new THREE.Vector3(); v[ax] = Math.sign(r[ax] || 1) * dist; return v;
+}
+function buildExplode() {
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const trans = new Set([TR.syncF, TR.syncR, TR.gearC, TR.pinB, TR.fly, TR.brake, TR.spA, TR.spB, TR.pinA, TR.chain, TR.chainPins, TR.rack, TR.rackLink, TR.retSpring, TR.bellows, TR.pedR, TR.lockR]);
+  for (const o of casing.children) {
+    const k = keyOf(o);
+    if (k === 'base') addExp(o, V(0, -0.03, 0), 0.45);
+    else if (k === 'marco') addExp(o, V(0, 0.46, 0), 0.05);
+    else if (k === 'piso') addExp(o, V(0, 0.02, -0.55), 0.3);
+    else if (k === 'carter') addExp(o, V(0.5, 0, 0), 0);
+    else if (k === 'canal') addExp(o, V(-0.42, 0, 0), 0);
+    else if (k === 'columna') addExp(o, V(0, 0.1, -0.62), 0.2);
+    else addExp(o, panelOff(o, 0.32), 0);
+  }
+  for (const o of chamber.children) {
+    const k = keyOf(o); _bb.setFromObject(o); _bb.getCenter(_bc);
+    if (k === 'tolva' || k === 'embudo') addExp(o, V(0, 0.36, Math.sign(_bc.z) * 0.08 * (k === 'embudo' ? 1.6 : 1)), 0.1);
+    else if (k === 'bocin') addExp(o, V(Math.sign(_bc.x) * (Math.abs(_bc.x) > 0.15 ? 0.3 : 0.14), 0.22, Math.sign(_bc.z) * 0.13), 0.25);
+    else addExp(o, panelOff(o, 0.12).add(V(0, 0.22, 0)), 0.15);
+  }
+  for (const [r, s] of [[rollF, 1], [rollR, -1]]) { addExp(r, V(0, 0.22, s * 0.13), 0.22); for (const c of r.children) if (c.userData.info?.key !== 'eje') addExp(c, V(c.position.x * 1.25, 0, 0), 0.4); }
+  const skip = new Set([casing, chamber, rollF, rollR, pInst, OD.pts]);
+  for (const o of machine.children) {
+    if (skip.has(o) || SACKS.some(s => s.grp === o)) continue;
+    const k = keyOf(o); _bb.setFromObject(o); _bb.getCenter(_bc);
+    let off, d = 0.3;
+    if (o === lid.pivot) { off = V(0, 0.62, -0.08); d = 0.05; }
+    else if (o === hatch.grp) { off = V(0, 0.5, 0); d = 0.08; }
+    else if (o === latch.pivot || k === 'gancho' || k === 'estribo') { off = V(0, 0.2, 0.32); d = 0.12; }
+    else if (k === 'bisagra' || k === 'amortiguador') { off = V(0, 0.5, -0.12); d = 0.1; }
+    else if (o === door.pivot || k === 'bisagraPuerta') { off = V(0, -0.02, 0.46); d = 0.35; }
+    else if (o === drawer.grp) { off = V(0, 0.12, 0.62); d = 0.4; }
+    else if (o === tray.grp || k === 'resortes') { off = V(0, -0.02, 0.62); d = 0.42; }
+    else if (k === 'rieles') { off = V(Math.sign(_bc.x) * 0.14, 0.08, 0.36); d = 0.4; }
+    else if (k === 'patas') { off = V(0, -0.04, 0); d = 0.45; }
+    else if (trans.has(o) || k === 'ejeA' || k === 'ejeB' || k === 'platina' || k === 'retorno' || k === 'fuelle' || k === 'manguera' || k === 'ruedaLibre' || k === 'cremallera' || k === 'pedalR' || k === 'seguroR') {
+      off = V(0.3 + Math.max(0, _bc.x - 0.19) * 5, _bc.y > 0.38 ? 0.22 : 0, o === TR.pedR ? 0.2 : 0); d = 0.28;
+    }
+    else if (o === TR.pedL || o === TR.retL || o === TR.lockL) { off = V(-0.34, 0, 0.18); d = 0.3; }
+    else if (['pulsador', 'varillaSeguro', 'guiaSeguro', 'escuadra', 'lengueta'].includes(k)) { off = V(0.12, 0.02, 0.4); d = 0.2; }
+    else if (['lamina', 'flecha', 'palanca', 'varillaPeso', 'trinquete'].includes(k)) { off = V(0.05, k === 'lamina' ? 0.36 : 0.3, k === 'lamina' ? 0.5 : 0.42); d = 0.2; }
+    else if (['deposito', 'aserrinDep', 'camisa'].includes(k)) { off = Math.abs(_bc.x) > 0.12 && _bc.z > -0.12 ? V(Math.sign(_bc.x) * 0.4, 0.26, 0) : V(0, 0.26, -0.45); d = 0.2; }
+    else if (o === SAW.plate || k === 'ranuraAserrin' || k === 'retornoPlaca') { off = V(0, 0.05, -0.2); d = 0.33; }
+    else if (o === SAW.pulley || o === SAW.cableV || o === SAW.cableH) { off = V(-0.34, 0, 0.18); d = 0.3; }
+    else if (['carbon', 'valvula', 'ductoOlor', 'puerto'].includes(k)) { off = V(0, 0.1, -0.72); d = 0.25; }
+    else if (k === 'peine') { off = V(0, 0.22, Math.sign(_bc.z) * 0.25); d = 0.3; }
+    else { off = _bc.clone().sub(CEN).setY(0).normalize().multiplyScalar(0.35); if (_bc.x > 0.19) off.set(0.5, 0, 0); if (_bc.x < -0.19) off.set(-0.42, 0, 0); d = 0.1; }
+    addExp(o, off, d);
+  }
+  // lista de piezas para recorrer una por una (sin repetir la misma ficha)
+  const seen = new Set(); pickables.forEach(m => { const inf = m.userData.info; if (inf && !seen.has(inf) && inf.name && TXT[inf.key]) { seen.add(inf); EXPL.parts.push({ info: inf, mesh: m }); } });
+}
+function explodeUndo() { for (const e of EXPL.list) e.obj.position.sub(e.applied), e.applied.set(0, 0, 0); }
+function explodeApply(dt) {
+  EXPL.u += (EXPL.target - EXPL.u) * Math.min(1, dt * 3.2);
+  if (EXPL.u < 1e-4) { EXPL.u = 0; return; }
+  for (const e of EXPL.list) { const t = smooth(e.delay, e.delay + 0.55, EXPL.u * 1.0); e.applied.copy(e.off).multiplyScalar(t); e.obj.position.add(e.applied); }
+}
+// =====================================================================
+//  RESALTADO AL PASAR EL CURSOR y RÓTULOS 3D NUMERADOS
+// =====================================================================
+const tintCache = new Map(); let tinted = null;
+const byInfo = new Map(); function meshesOf(inf) { if (!byInfo.size) pickables.forEach(m => { const i = m.userData.info; if (!byInfo.has(i)) byInfo.set(i, []); byInfo.get(i).push(m); }); return byInfo.get(inf) || []; }
+function tint(inf) {
+  if (tinted === inf) return; untint(); if (!inf) return; tinted = inf;
+  for (const m of meshesOf(inf)) { if (!m.material || m.isInstancedMesh) continue; let t = tintCache.get(m.material); if (!t) { t = m.material.clone(); if (t.emissive) { t.emissive = new THREE.Color(0x3b8a4a); t.emissiveIntensity = 0.55; } tintCache.set(m.material, t); } m.userData.orig = m.material; m.material = t; }
+}
+function untint() { if (!tinted) return; for (const m of meshesOf(tinted)) if (m.userData.orig) { m.material = m.userData.orig; m.userData.orig = null; } tinted = null; }
+const CALL = { items: [], box: document.createElement('div') };
+CALL.box.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:14'; document.body.appendChild(CALL.box);
+function setCallouts(list) { // list: [{obj|pos, text}]
+  CALL.box.innerHTML = ''; CALL.items = list.map((it, i) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:absolute;transform:translate(-6px,-50%);display:flex;align-items:center;gap:6px;font:600 12px Segoe UI,Arial;color:#fff;white-space:nowrap';
+    d.innerHTML = `<span style="width:12px;height:12px;border-radius:50%;background:${it.color || '#d23a2b'};box-shadow:0 0 0 3px rgba(255,255,255,.7)"></span><span style="background:rgba(14,18,16,.9);padding:3px 8px;border-radius:10px;border:1px solid ${it.color || '#d23a2b'}">${it.text}</span>`;
+    CALL.box.appendChild(d); return { ...it, el: d };
+  });
+}
+function updateCallouts() {
+  for (const it of CALL.items) {
+    if (it.obj) { _bb.setFromObject(it.obj); _bb.getCenter(_pa); } else _pa.copy(typeof it.pos === 'function' ? it.pos() : it.pos);
+    _pa.project(camera); const vis = _pa.z < 1;
+    it.el.style.display = vis ? 'flex' : 'none'; it.el.style.left = ((_pa.x + 1) / 2 * innerWidth) + 'px'; it.el.style.top = ((1 - _pa.y) / 2 * innerHeight) + 'px';
+  }
+}
+const CALLSETS = {
+  seguro: () => [{ obj: lid.pivot.children.find(m => m.userData.info?.key === 'lengueta'), text: '1 · Lengüeta de la tapa' }, { obj: SAFE.plunger, text: '2 · Pulsador (baja 4 mm)' }, { pos: new THREE.Vector3(0.183, 0.36, 0.186), text: '3 · Varilla roja' }, { obj: SAFE.crank, text: '4 · Escuadra' }, { obj: TR.lockR, text: '5 · Pasador bajo el pedal' }],
+  bascula: () => [{ obj: tray.springs[3], text: '1 · 4 resortes: bajan 1 mm por kg', color: '#2f6fb5' }, { obj: gauge.push, text: '2 · Alambre', color: '#2f6fb5' }, { obj: gauge.inArm, text: '3 · Palanca en L (brazo de 9 mm)', color: '#2f6fb5' }, { obj: gauge.arrow, text: '4 · Flecha = brazo largo', color: '#2f6fb5' }, { pos: () => new THREE.Vector3(0.13, 0.37, 0.2), text: '5 · Lámina impresa', color: '#2f6fb5' }, { obj: gauge.pawl, text: '6 · Trinquete de la puerta', color: '#2f6fb5' }],
+  aserrin: () => [{ obj: hatch.grp, text: '1 · Se carga aquí (bajo la tapa)', color: '#b0843c' }, { obj: SAW.fills[1], text: '2 · Depósito en U (≈5 L)', color: '#b0843c' }, { pos: new THREE.Vector3(-0.154, 0.298, 0.06), text: '3 · Placa con agujeros', color: '#b0843c' }, { pos: new THREE.Vector3(0.154, 0.29, -0.03), text: '4 · Ranuras: atrás, izq. y der.', color: '#b0843c' }, { obj: SAW.pulley, text: '5 · Cable', color: '#b0843c' }, { obj: TR.pedL, text: '6 · Pedal izquierdo', color: '#b0843c' }],
+  transmision: () => [{ obj: TR.pedR, text: '1 · Pedal (pivote atrás)', color: '#555' }, { obj: TR.rack, text: '2 · Cremallera', color: '#555' }, { obj: TR.pinA, text: '3 · Rueda libre', color: '#555' }, { pos: () => new THREE.Vector3(0.252, 0.29, T.zA + 0.05), text: '4 · Cadena 24:8', color: '#555' }, { obj: TR.fly, text: '5 · Volante 1,45 kg', color: '#555' }, { obj: TR.gearC, text: '6 · Reductor 5:1', color: '#555' }, { obj: rollF, text: '7 · Rodillos', color: '#555' }],
+  olor: () => [{ obj: lid.seal, text: '1 · Empaque EPDM', color: '#2f7a3d' }, { obj: TR.bellows, text: '2 · Fuelle (pedal derecho)', color: '#2f7a3d' }, { pos: new THREE.Vector3(0, 0.43, -0.2), text: '3 · Carbón activado', color: '#2f7a3d' }, { obj: SAW.valveFlap, text: '4 · Válvula de una vía', color: '#2f7a3d' }, { pos: new THREE.Vector3(0, 0.279, -0.145), text: '5 · Rejilla de aspiración (sobre la bolsa)', color: '#2f7a3d' }, { obj: SAW.plate, text: '6 · Aserrín que tapa', color: '#2f7a3d' }],
+};
+// =====================================================================
+//  OLOR (partículas de aire) y SONIDO
+// =====================================================================
+const OD = { n: 260, pts: null, a: [] };
+{
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(OD.n * 3), 3)); geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(OD.n * 3), 3));
+  const spr = canvasTex(64, 64, (x) => { const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); });
+  OD.pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.018, map: spr, vertexColors: true, transparent: true, opacity: 0.75, depthWrite: false }));
+  OD.pts.visible = false; OD.pts.frustumCulled = false; machine.add(OD.pts);
+  for (let i = 0; i < OD.n; i++) OD.a.push({ life: 0 });
+}
+const colOdor = new THREE.Color(0x8b7d2c), colEsc = new THREE.Color(0xd0662c), colClean = new THREE.Color(0x6fc3ff);
+const DUCT = [new THREE.Vector3(0, 0.275, -0.135), new THREE.Vector3(0, 0.279, -0.165), new THREE.Vector3(0, 0.34, -0.175), new THREE.Vector3(0, 0.43, -0.174), new THREE.Vector3(0, 0.55, -0.18), new THREE.Vector3(0, 0.62, -0.215)];
+function heapUncovered() { let a = 0, n = 0; for (let k = 0; k < HP.h.length; k++) if (HP.h[k] > 0.002) { n++; a += 1 - HP.cov[k]; } return n ? a / n : 0; }
+function updateOdor(dt) {
+  OD.pts.visible = VIEW.seals && EXPL.u < 0.02; if (!OD.pts.visible) return;
+  const inCh = P.filter(p => p.y > 0.31 && p.type !== 'aserrin').length, pos = OD.pts.geometry.attributes.position, col = OD.pts.geometry.attributes.color;
+  const lidOpen = S.th > 0.08, doorOpen = S.de > 0.2, suck = S.vR > 0.02 && sealed(), unc = heapUncovered();
+  for (let i = 0; i < OD.n; i++) {
+    const o = OD.a[i];
+    if (o.life <= 0) {
+      const r = Math.random();
+      if (inCh > 0 && r < 0.45) Object.assign(o, { x: (Math.random() - .5) * 0.22, y: 0.34 + Math.random() * 0.24, z: (Math.random() - .5) * 0.22, zone: 'ch', life: 2 + Math.random() * 3 });
+      else if (S.bagMass > 0.2 && r < 0.45 + 0.5 * unc) Object.assign(o, { x: (Math.random() - .5) * 0.3, y: drawer.grp.position.y + 0.06 + Math.random() * 0.15, z: drawer.grp.position.z + (Math.random() - .5) * 0.26, zone: 'bin', life: 2 + Math.random() * 3 });
+      else { Object.assign(o, { life: 0.2, zone: 'none', c: colOdor }); pos.setXYZ(i, 0, -5, 0); continue; }
+      o.c = colOdor; o.k = 0;
+    }
+    if (o.zone === 'none') { o.life -= dt; pos.setXYZ(i, 0, -5, 0); continue; }
+    o.life -= dt; const j = () => (Math.random() - 0.5) * 0.12 * dt * 8;
+    if (o.zone === 'ch' || o.zone === 'bin') {
+      if (lidOpen && o.y > 0.5 && o.zone === 'ch') { o.zone = 'esc'; o.c = colEsc; }
+      else if (doorOpen && o.zone === 'bin' && o.z > drawer.grp.position.z) { o.zone = 'esc2'; o.c = colEsc; }
+      else if (suck && Math.random() < 0.03) { o.zone = 'duct'; o.k = 0; }
+      o.x = clamp(o.x + j(), -0.16, 0.16); o.y = clamp(o.y + j(), 0.07, 0.6); o.z = clamp(o.z + j(), -0.14, 0.16);
+    } else if (o.zone === 'esc') { o.y += 0.09 * dt; o.x += j() * 2; o.z += j() * 2; if (o.y > 1.0) o.life = 0; }
+    else if (o.zone === 'esc2') { o.z += 0.08 * dt; o.y += 0.05 * dt; if (o.z > 0.8) o.life = 0; }
+    else if (o.zone === 'duct') {
+      if (o.k === 0) { o.k = 0.001; o.x = DUCT[0].x; o.y = DUCT[0].y; o.z = DUCT[0].z; }
+      o.k += dt * 0.7; const seg = Math.min(DUCT.length - 2, Math.floor(o.k)), f = o.k - seg;
+      if (o.k >= DUCT.length - 1) { o.zone = 'out'; o.c = colClean; } else { const A = DUCT[seg], B = DUCT[seg + 1]; o.x = lerp(A.x, B.x, f); o.y = lerp(A.y, B.y, f); o.z = lerp(A.z, B.z, f); if (seg >= 3) o.c = colClean; }
+    } else if (o.zone === 'out') { o.z -= 0.08 * dt; o.y += 0.02 * dt; if (o.z < -0.45) o.life = 0; }
+    pos.setXYZ(i, o.x, o.y, o.z); col.setXYZ(i, o.c.r, o.c.g, o.c.b);
+  }
+  pos.needsUpdate = true; col.needsUpdate = true;
+}
+const AU = { on: true, ctx: null };
+function audioInit() {
+  if (AU.ctx) return; try { AU.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
+  const c = AU.ctx, len = c.sampleRate * 2, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const mk = (type, f, q) => { const s = c.createBufferSource(); s.buffer = buf; s.loop = true; const fl = c.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q; const gn = c.createGain(); gn.gain.value = 0; s.connect(fl).connect(gn).connect(c.destination); s.start(); return { gn, fl }; };
+  AU.grind = mk('bandpass', 900, 0.7); AU.whir = mk('bandpass', 300, 3);
+}
+function blip(freq, dur, vol, type = 'square') {
+  if (!AU.on || !AU.ctx) return; const c = AU.ctx, o = c.createOscillator(), gn = c.createGain();
+  o.type = type; o.frequency.value = freq; gn.gain.setValueAtTime(vol, c.currentTime); gn.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+  o.connect(gn).connect(c.destination); o.start(); o.stop(c.currentTime + dur + 0.02);
+}
+function thud(vol, f = 110) { if (!AU.on || !AU.ctx) return; blip(f, 0.18, Math.min(0.5, vol), 'sine'); blip(f * 2.7, 0.05, Math.min(0.2, vol * 0.4), 'triangle'); }
+function updateAudio() {
+  if (!AU.ctx) return; const t = AU.ctx.currentTime, wC = S.wB / T.red;
+  AU.grind.gn.gain.setTargetAtTime(AU.on ? clamp(S.loadC * wC * 0.004, 0, 0.35) : 0, t, 0.05);
+  AU.grind.fl.frequency.setTargetAtTime(500 + 60 * wC, t, 0.1);
+  AU.whir.gn.gain.setTargetAtTime(AU.on ? clamp(S.wB * 0.0009, 0, 0.08) : 0, t, 0.1);
+  AU.whir.fl.frequency.setTargetAtTime(120 + S.wB * 4, t, 0.1);
+  if (EV.clicks > 0.6) { EV.clicks = 0; blip(2400, 0.012, 0.05); }
+  if (EV.latchClack) { EV.latchClack = 0; blip(900, 0.03, 0.15); blip(320, 0.06, 0.12, 'triangle'); }
+  if (EV.lidThud) { thud(EV.lidThud * 0.25, 95); EV.lidThud = 0; }
+  if (EV.doorThud) { thud(EV.doorThud * 0.3, 80); EV.doorThud = 0; }
+}
+
+// =====================================================================
+//  FICHAS DE CADA PIEZA: nombre · material y medida · qué hace (lenguaje sencillo)
+// =====================================================================
+const TXT = {
+  paredIzq: ['Pared izquierda', 'Polipropileno (PP) de 3 mm', 'Parte del cuerpo de una sola pieza (rotomoldeado). Se vuelve traslúcida con el control de abajo para ver adentro.'],
+  paredDer: ['Pared derecha', 'Polipropileno (PP) de 3 mm', 'Separa el interior del carter de la transmisión. Por ella salen los ejes de los rodillos, apoyados en bocines de bronce.'],
+  paredAtras: ['Pared trasera', 'Polipropileno (PP) de 3 mm', 'Cierra la columna de olores, donde van el carbón activado y la válvula de una vía.'],
+  frente: ['Frente superior', 'Polipropileno (PP) verde de 3 mm', 'Lleva el gancho de la tapa, el logo y la ventana del indicador de peso.'],
+  base: ['Base', 'PP reforzado', 'Apoya los cuatro resortes de la báscula y los pivotes de los dos pedales.'],
+  patas: ['Patas antideslizantes', 'Caucho EPDM Ø 36 mm', 'Evitan que el equipo se corra al pedalear.'],
+  piso: ['Piso intermedio', 'PP de 4 mm con hueco de 26 × 26 cm', 'Separa la zona de molido del cajón. Por el hueco cae la pulpa directo a la bolsa y por sus tres ranuras cae el aserrín.'],
+  marco: ['Marco superior y boca de carga', 'PP · boca de 22 × 22 cm', 'El empaque de la tapa apoya sobre este marco.'],
+  columna: ['Tabique de la columna de olores', 'PP', 'Separa el depósito de aserrín de la columna trasera donde está el carbón activado.'],
+  carter: ['Carter de la transmisión', 'PP (tapa de protección)', 'Encierra cadena, piñones y volante para que nadie meta los dedos. Añade 7 cm al ancho: 45 × 40 × 68 cm en total con el canal izquierdo.'],
+  canal: ['Canal izquierdo', 'PP', 'Protege el pedal izquierdo y su cable.'],
+  camaraFrente: ['Cámara de molido · pared frontal', 'Acero inoxidable AISI 304, 1,5 mm', 'La cámara es una caja de 24 × 24 cm donde trabajan los rodillos. El inox resiste los ácidos de la comida.'],
+  camaraAtras: ['Cámara de molido · pared trasera', 'Inox 304, 1,5 mm', 'Detrás está el depósito de aserrín en U.'],
+  camaraDer: ['Cámara de molido · pared derecha', 'Inox 304, 1,5 mm', 'Sostiene los bocines de los ejes.'], camaraIzq: ['Cámara de molido · pared izquierda', 'Inox 304, 1,5 mm', 'Sostiene los bocines de los ejes.'],
+  tolva: ['Tolva de la boca', 'Inox 304', 'Encauza lo que se echa por la boca de 22 × 22 cm.'],
+  embudo: ['Embudo en V (62°)', 'Inox 304', 'Dos paredes inclinadas que llevan TODO directo a la mordida de los rodillos. Con más de 60° la pulpa húmeda no se queda pegada (se queda quieta por debajo de 40°). Terminan a 2 mm de las cuchillas, así nada pasa sin moler.'],
+  bocin: ['Bocín', 'Bronce autolubricado', 'Apoyo de los ejes donde atraviesan las paredes.'],
+  puerto: ['Rejilla de aspiración del cajón', 'PP · 12 × 2 cm, atrás del compartimento', 'Está atrás, justo encima de la bolsa, que es donde se junta el olor de lo que se va acumulando. Por aquí el fuelle saca ese aire y lo manda al carbón activado. La cámara de molido también se ventila por aquí, porque está abierta hacia el cajón por el hueco de los rodillos.'],
+  eje: ['Eje hexagonal', 'Acero al carbono recubierto, 18 mm entre caras', 'Las cuchillas entran en el hexágono y giran con el eje sin patinar.'],
+  cuchillas: ['Cuchilla de gancho', 'Inox endurecido, Ø 72 mm, 12 mm de espesor', 'Dos ejes giran en sentido contrario hacia el centro. Las cuchillas de uno pasan entre las del otro con 1 mm de holgura, como dos peines. Muerden el trozo, lo arrastran hacia abajo y lo parten; solo pasa lo que ya mide menos de unos 13 mm.'],
+  separadores: ['Separador', 'Inox, Ø 42 mm', 'Anillo entre cuchillas: es el hueco donde entra la cuchilla del otro eje.'],
+  peine: ['Peine rascador', 'Lámina de inox cortada con láser', 'Sí es necesario: son dedos fijos que entran entre las cuchillas por debajo. Las cáscaras fibrosas (plátano, tusa, hojas de mazorca) tienden a enrollarse en el eje y a subir de nuevo con el giro; el peine las despega y las manda hacia abajo. Sin él, los rodillos se atascan en pocos días. Es una sola lámina, muy barata.'],
+  tapa: ['Tapa hermética', 'PP · 38 × 40 × 4 cm · 1,2 kg', 'Bisagra de piano atrás. Pasados los 90° su propio peso la mantiene abierta contra el tope de la bisagra (105°). Al cerrar, un amortiguador la frena al final.', 'Arrastra o doble clic'],
+  tapaAsa: ['Labio para levantar la tapa', 'PP', 'Punto de agarre de la tapa.', 'Arrastra hacia arriba'],
+  etiqueta: ['Rótulo de uso', 'Placa impresa', 'Solo desechos orgánicos: cáscaras, sobras, café, cáscara de huevo y servilletas. Nunca vidrio, metal, plástico ni pilas.'],
+  empaque: ['Empaque de la tapa', 'EPDM de celda cerrada, perfil en D de 10 × 8 mm', 'Corre por todo el borde, como el de una nevera. Solo sella cuando el gancho lo aprieta 3,5 mm.'],
+  lengueta: ['Lengüeta roja de la tapa (seguro)', 'Acero pintado', 'Paso 1 del seguro infantil: cuando la tapa está cerrada Y apretada por el gancho, esta lengüeta entra en la ranura del marco y empuja el pulsador rojo 4 mm hacia abajo.'],
+  una: ['Uña de enganche', 'Acero inoxidable', 'Donde muerde el estribo del gancho para apretar la tapa.'],
+  bisagra: ['Bisagra de piano', 'Acero inoxidable, pasador de 4 mm', 'Nudillos alternados tapa-marco a todo el ancho; lleva el tope de 105° integrado.'],
+  amortiguador: ['Amortiguador de cierre suave', 'Rotativo de aceite de silicona', 'Frena la tapa al final del cierre para que no golpee ni pellizque.'],
+  gancho: ['Gancho de palanca (cierre sobre-centro)', 'Palanca de PP + estribo de acero', 'Al bajar la palanca, el estribo engancha la uña y tira de la tapa: el empaque se aprieta 3,5 mm. Si la tapa no estaba abajo, se cierra en vacío y NO sella. Al abrirlo, una leva baja la zapata de freno sobre el volante.', 'Clic o doble clic'],
+  estribo: ['Estribo del gancho', 'Alambre de acero 3 mm', 'Es el lazo que engancha la uña de la tapa.'],
+  puerta: ['Puerta frontal abatible', 'PP con empaque', 'Bisagra abajo, como un horno. Un resorte de compensación la deja bajar suave y quedar horizontal, sirviendo de repisa para el cajón. Solo se destraba cuando la aguja entra en la zona roja.', 'Arrastra o doble clic'],
+  puertaAsa: ['Manija de la puerta', 'PP', 'Para jalar la puerta.', 'Arrastra hacia afuera'],
+  empaquePuerta: ['Empaque de la puerta', 'EPDM', 'Mantiene el olor del cajón adentro.'],
+  bisagraPuerta: ['Bisagras de la puerta', 'Inox', 'Eje inferior de la puerta con resorte compensador.'],
+  bandeja: ['Bandeja de pesaje', 'Acero pintado', 'El cajón descansa sobre ella y ella solo sobre los 4 resortes: todo el peso pasa por los resortes.'],
+  resortes: ['Resortes de la báscula (ley de Hooke)', 'Acero de resorte · 4 × 2,45 N/mm', 'Los cuatro suman 9,81 N/mm: cada kilo baja la bandeja exactamente 1 mm (F = k·x). Es el mismo principio de una báscula de baño.'],
+  cajon: ['Cajón extraíble de 20 L', 'PP · 34 × 30 × 20 cm', 'Recibe la pulpa directo de los rodillos. Con la puerta abierta se desliza sobre dos guías bajas y sale sobre la puerta, que sirve de repisa; un tope evita sacarlo del todo por accidente.', 'Arrastra (con la puerta abierta)'],
+  cajonAsa: ['Manija del cajón', 'PP', 'Para sacar el cajón.', 'Arrastra hacia afuera'],
+  reserva: ['Compartimento de bolsas de reserva', 'PP, tapa a presión', 'Guarda 10 bolsas dobladas. Con el cajón afuera y sin bolsa, haz clic aquí para poner una nueva.', 'Clic: poner bolsa nueva'],
+  rejilla: ['Rejilla separadora', 'PP perforado, patas de 3 cm', 'Deja abajo un sumidero de 2,5 L para el líquido; la pulpa queda escurrida encima.'],
+  rieles: ['Guías bajas del cajón', 'Acero galvanizado, sobre la bandeja', 'El cajón se desliza sobre estas dos guías y, al salir, sobre la puerta abierta que hace de repisa. Como van sobre la bandeja, todo el peso del cajón pasa a los resortes de la báscula. No hay rieles a los lados: ese hueco queda libre para el alambre del indicador.'],
+  bolsa: ['Bolsa compostable', 'Bioplástico compostable · 20 L', 'Su borde elástico encaja en la ranura del reborde del cajón. Trae un cordón: al tirar de él se cierra sola, sin tocar el contenido.', 'Con el cajón afuera: arrástrala para sacarla'],
+  cordon: ['Cordón de cierre', 'Algodón', 'Al levantar la bolsa, el cordón la cierra como un saco.'],
+  saco: ['Bolsa llena y cerrada', 'Lista para la ruta de recolección', 'Va a la planta de compostaje. Puedes moverla: tiene peso y no atraviesa el equipo.', 'Arrastra para moverla'],
+  monton: ['Pulpa molida', '≈ 0,6 kg por litro', 'Se amontona donde cae y se reparte sola con un talud de unos 42°. Las zonas color madera están tapadas con aserrín.'],
+  residuo: ['Residuo orgánico', 'Cáscaras, sobras, café, huevo, tusa', 'Cada trozo tiene masa, tamaño y dureza. Las cuchillas le quitan energía al volante hasta partirlo en dos, una y otra vez, hasta que cabe entre ellas.'],
+  sincro: ['Engranajes de sincronización 1:1', 'Acero, 24 dientes', 'Obligan a los dos rodillos a girar igual de rápido y en sentidos opuestos, siempre hacia el centro.'],
+  corona: ['Corona del reductor', 'Bronce, 50 dientes', 'Con el piñón de 10 dientes reduce 5:1: los rodillos giran 5 veces más lento que el volante pero con 5 veces más fuerza.'],
+  pinonB: ['Piñón del reductor', 'Acero, 10 dientes', 'Va en el mismo eje del volante.'],
+  ejeB: ['Eje del volante', 'Acero Ø 11 mm', 'Lleva el piñón de cadena, el volante y el piñón del reductor.'],
+  volante: ['Volante de inercia', 'Hierro fundido · 1,45 kg · Ø 14 cm', 'Guarda la energía de cada pisada (unos 12 J) y se la entrega a las cuchillas cuando muerden algo duro. Por eso los rodillos siguen moliendo aunque levantes el pie. La marca naranja deja ver el giro.'],
+  freno: ['Zapata de freno', 'Caucho sobre la llanta del volante', 'El volante guarda energía y seguiría girando solo; por eso, al soltar el gancho de la tapa, el cable del freno baja esta zapata sobre su llanta y los rodillos paran en menos de un segundo, antes de que la tapa termine de abrirse.'],
+  pinonCadena: ['Piñón de cadena', 'Acero, 8 dientes', 'Recibe la cadena en el eje del volante.'],
+  catalina: ['Catalina', 'Acero, 24 dientes', 'Con el piñón de 8 multiplica el giro por 3, como en una bicicleta.'],
+  ejeA: ['Eje inferior', 'Acero Ø 11 mm', 'Lleva la catalina y la rueda libre.'],
+  ruedaLibre: ['Piñón con rueda libre (uñas rojas)', 'Acero + 2 uñas con resorte', 'Funciona como la rueda libre de una bicicleta. El piñón engrana con la cremallera y SÍ gira hacia atrás cuando el pedal sube. Pero no está pegado al eje: lo une con él un par de uñas con resorte que se apoyan en una rueda de dientes de sierra fija al eje. Al bajar el pedal, las uñas se traban en los dientes y empujan el eje. Al subir el pedal, las uñas resbalan sobre la rampa de los dientes (clic, clic) y el eje sigue girando hacia adelante con el volante: nada se frena ni se devuelve.'],
+  trinqueteRueda: ['Rueda de trinquete (dientes de sierra)', 'Acero, 12 dientes, fija al eje', 'Cada diente tiene una cara recta y una rampa: las uñas empujan contra la cara recta y resbalan por la rampa. Gira siempre hacia adelante, arrastrada por la cadena.'],
+  platina: ['Chumacera', 'Acero + bronce', 'Apoya los ejes en la tapa del carter.'],
+  cadena: ['Cadena de rodillos 1/2"', 'Acero', 'Une la catalina con el piñón del volante.'],
+  pedalR: ['Pedal derecho · triturar', 'Palanca de acero + taco de caucho', 'El pivote está atrás, bajo la base: pisas adelante y ES ESE extremo el que baja 5,5 cm. Empuja la cremallera hacia abajo.', 'Mantén presionado (o Espacio)'],
+  cremallera: ['Cremallera', 'Acero', 'Barra dentada unida a la palanca del pedal. Al bajar gira el piñón de la rueda libre.'],
+  retorno: ['Resorte de torsión del pedal', 'Acero de resorte, en el pivote', 'Enrollado en el pivote, como el de una caneca de pedal: sube el pedal cuando levantas el pie. No mueve la cremallera: la cremallera la mueve la palanca del pedal.'],
+  pulsadorPuerta: ['Pulsadores de la puerta (seguro)', 'Acero rojo con resorte', 'La puerta cerrada los empuja hacia adentro. Al abrir la puerta, sus resortes los sacan y por su varilla meten un segundo pasador bajo cada pedal: con el frente abierto no se puede moler ni echar aserrín.'],
+  seguroPuerta: ['Pasador de la puerta (pedal derecho)', 'Acero rojo Ø 9 mm', 'Segundo tope independiente del pedal derecho: entra cuando la puerta frontal se abre.'],
+  cableFreno: ['Cable del freno (tipo bicicleta)', 'Cable Bowden de acero', 'Une la palanca del gancho con la zapata de freno. Al soltar el gancho, el cable tira de la zapata contra la llanta del volante.'],
+  colector: ['Colector con dos válvulas de lengüeta', 'PP + membranas de silicona', 'Hace que el fuelle bombee en un solo sentido: al estirarse, la primera válvula deja entrar el aire que viene del cajón; al comprimirse, esa se cierra y la segunda lo manda al carbón activado.'],
+  fuelle: ['Fuelle de extracción de olores', 'Caucho EPDM · ≈ 0,3 L por pisada', 'Reemplaza al ventilador eléctrico. Al pisar se estira y aspira el aire del compartimento del cajón por la rejilla de atrás; al soltar lo empuja por el carbón activado y sale por la válvula de una vía. El interior queda en leve vacío: el aire entra hacia el equipo y nunca sale hacia la cocina.'],
+  manguera: ['Manguera del fuelle', 'Caucho', 'Lleva el aire del fuelle al carbón activado.'],
+  seguroR: ['Pasador rojo del seguro infantil', 'Acero pintado Ø 9 mm', 'Paso 5 del seguro: mientras la tapa no esté cerrada y apretada (o si la puerta frontal está abierta), este pasador queda metido debajo de la palanca del pedal. El pedal choca con él a 1,5 mm y los rodillos no pueden girar. No hay sensores: es un tope de acero.'],
+  pulsador: ['Pulsador rojo del marco', 'Acero con resorte', 'Paso 2 del seguro: la lengüeta de la tapa lo baja 4 mm. Con la tapa abierta, su resorte lo sube.'],
+  varillaSeguro: ['Varilla roja del seguro', 'Acero Ø 4 mm', 'Paso 3 del seguro: une el pulsador del marco con la escuadra de abajo. Baja 4 mm cuando la tapa está sellada.'],
+  guiaSeguro: ['Guía de la varilla', 'Acero', 'Mantiene la varilla roja recta en la esquina.'],
+  escuadra: ['Escuadra del seguro', 'Acero', 'Paso 4 del seguro: palanca en L que convierte el movimiento vertical de la varilla en el movimiento horizontal del pasador.'],
+  compuertaNo: ['', '', ''],
+  pedalL: ['Pedal izquierdo · aserrín', 'Palanca de acero + taco color madera', 'Pivote atrás; se pisa adelante. Tira del cable que desliza la placa dosificadora: cae una dosis de aserrín por atrás, izquierda y derecha. Bloqueado con la puerta abierta.', 'Mantén presionado (o la tecla C)'],
+  retornoL: ['Resorte de torsión del pedal', 'Acero, en el pivote', 'Sube el pedal izquierdo cuando levantas el pie.'],
+  seguroL: ['Pasador del pedal izquierdo', 'Acero rojo', 'Se mete bajo la palanca cuando la puerta frontal está abierta, para que el aserrín no caiga afuera.'],
+  pestana: ['Pestaña de la bandeja (sistema azul)', 'Acero', 'Aquí se engancha el alambre del indicador: cuando la bandeja baja por el peso, el alambre baja con ella.'],
+  varillaPeso: ['Alambre del indicador', 'Alambre de acero Ø 3 mm', 'Une la bandeja con el brazo corto de la palanca. Baja exactamente lo mismo que la bandeja: 1 mm por cada kilo. Sube por la esquina delantera derecha, en el hueco entre el cajón y la pared: queda por fuera del camino del cajón y nunca estorba al sacarlo.'],
+  palanca: ['Palanca en L (sistema azul)', 'Lámina de acero estampada + remache', 'Tiene un brazo corto de 9 mm donde tira el alambre y un brazo largo de 62 mm que es la flecha. Cada milímetro que baja la bandeja gira la flecha unos 6°: así 12,5 kg recorren toda la lámina. No hay engranajes: es una sola pieza troquelada.'],
+  flecha: ['Flecha del indicador', 'Brazo largo de la palanca, pintado de rojo', 'Se mueve sobre la lámina de colores. Cuando pasa al rojo, el brazo de abajo de la misma palanca empuja el trinquete y la puerta frontal se destraba.'],
+  lamina: ['Lámina de colores', 'Adhesivo impreso detrás de una ventana de policarbonato', 'Verde hasta 7 kg, ámbar hasta 10,2 kg y rojo desde 10,2 kg (85 % de los 20 L). Solo la flecha se mueve.'],
+  trinquete: ['Trinquete de la puerta (sistema azul)', 'Acero', 'Uña con resorte que traba la puerta. La levanta la varilla que empuja la palanca del indicador cuando la flecha entra al rojo. Si cierras la puerta con menos peso, se vuelve a trabar sola.'],
+  deposito: ['Depósito de aserrín en U', 'PP (parte del mismo cuerpo) · ≈ 5 L', 'Rodea la cámara por atrás y por los dos lados, en el hueco que ya deja el cuerpo: cuesta casi nada fabricarlo. Alcanza para unas 160 dosis (2-3 meses).'],
+  aserrinDep: ['Aserrín o biochar', '≈ 0,2 kg por litro', 'Absorbe el agua libre (que es la que carga el olor), sube la relación carbono/nitrógeno y mantiene la pulpa aireada: así no se pudre ni huele.'],
+  camisa: ['Camisa', 'Tubo de PP', 'Los ejes y el conducto atraviesan el depósito por dentro de estos tubos, sin tocar el aserrín.'],
+  placaDosif: ['Placa dosificadora en U', 'Acero galvanizado con 27 celdas', 'En reposo las celdas están bajo el depósito y se llenan. Al pisar el pedal izquierdo la placa avanza 15 mm, las celdas quedan sobre las ranuras del piso y la dosis (≈ 30 mL, dos cucharadas) cae. Al soltar, un resorte la regresa y se vuelven a llenar. Nunca cae de más.'],
+  ranuraAserrin: ['Ranuras de salida del aserrín', 'En el piso intermedio', 'Por atrás, izquierda y derecha: la dosis cae alrededor y se reparte sobre lo recién molido.'],
+  retornoPlaca: ['Resorte de la placa', 'Acero', 'Devuelve la placa para que las celdas se llenen otra vez.'],
+  polea: ['Polea de reenvío', 'Bronce', 'Cambia el cable del pedal de vertical a horizontal.'],
+  cable: ['Cable de acero', 'Acero trenzado Ø 1,5 mm', 'Del pedal izquierdo a la placa dosificadora.'],
+  tapaRecarga: ['Tapa del depósito de aserrín', 'PP color madera, bisagra atrás', 'Tres listones unidos en U alrededor de la boca. Queda debajo de la tapa principal: solo se puede levantar con la tapa abierta, y se abre hacia arriba igual que ella. Por ahí se vierte el aserrín (lo hace el operario cada 15 días).', 'Clic con la tapa abierta: abrir / cerrar'],
+  carbon: ['Cartucho de carbón activado', '250 g en pellets · 12 × 6 × 4,5 cm', 'Atrapa las moléculas de olor del aire que sale. Lo cambia el operario cada 6 meses, sin herramientas.'],
+  valvula: ['Válvula de una sola vía', 'Membrana de silicona Ø 30 mm', 'Es la única salida de aire del equipo. Se abre sola con una presión mínima: deja salir el aire que empuja el fuelle y los gases que suelta la pulpa al descomponerse, siempre DESPUÉS de pasar por el carbón. Nunca deja que el aire vuelva a entrar por ahí: así el olor no regresa y el interior mantiene el leve vacío.'],
+  ductoOlor: ['Conducto de aspiración', 'PP Ø 18 mm', 'Sube por la columna trasera desde la rejilla del cajón hasta el carbón activado.'],
+};
+for (const [k, v] of Object.entries(TXT)) Object.assign(info(k), { name: v[0], mat: v[1], desc: v[2], act: v[3], key: k });
+
+// Contadores usados por el panel de estado
+const G0 = { step: 0, t0: 0, doses0: 0, strokes: 0, triedLock: false, doneT: 0 };
+const $ = (id) => document.getElementById(id);
+const fmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
+
+// =====================================================================
+//  MANUAL: cómo funciona, cómo se arma y lista de piezas
+// =====================================================================
+const VIEWS = {
+  seguro: { cam: [[0.98, 0.52, 1.18], [0.02, 0.35, 0.12]], trans: 75, call: 'seguro' },
+  transmision: { cam: [[1.3, 0.46, 0.5], [0.1, 0.3, 0.02]], trans: 75, call: 'transmision' },
+  rodillos: { cam: [[0.62, 0.82, 0.78], [-0.03, 0.45, 0]], trans: 80, call: null },
+  aserrin: { cam: [[-0.8, 0.98, 1.0], [0.06, 0.36, 0]], trans: 80, call: 'aserrin' },
+  bascula: { cam: [[0.88, 0.34, 1.08], [-0.01, 0.22, 0.1]], trans: 80, call: 'bascula' },
+  olor: { cam: [[-0.5, 0.95, -1.15], [0.08, 0.42, -0.08]], trans: 75, call: 'olor' },
+  puerta: { cam: [[0.95, 0.62, 1.35], [-0.05, 0.16, 0.2]], trans: 50, call: null },
+};
+const MANUAL = `
+<details open><summary>Cómo se usa (ciclo de uso)</summary><div class="in"><p>Todo se hace desde el modo <b>Libre</b> (botones) o directamente sobre el modelo: arrastra la tapa, la puerta, el cajón o la bolsa, mantén presionado un pedal o haz doble clic para abrir y cerrar.</p><ol>
+<li>Suelta el <b>gancho</b> del frente y <b>abre la tapa</b>.</li>
+<li>Si hace falta, levanta la <b>tapa del aserrín</b> (los listones color madera bajo la tapa) y recarga el depósito.</li>
+<li><b>Echa los residuos</b> del día (≈ 460 g) por la boca.</li>
+<li><b>Baja la tapa</b> y <b>cierra el gancho</b>: el empaque sella y el pasador rojo sale de debajo del pedal.</li>
+<li><b>Pisa el pedal derecho</b> varias veces: los rodillos muelen y la pulpa cae a la bolsa.</li>
+<li><b>Pisa una vez el pedal izquierdo</b>: cae una dosis de aserrín que tapa lo molido.</li>
+<li>Repite cada día. Cuando la <b>flecha</b> llegue al <b>rojo</b>, la puerta se destraba.</li>
+<li>Antes de abrir, pisa <b>3 veces el pedal derecho</b>: el fuelle saca el aire del cajón por el carbón.</li>
+<li>Abre la <b>puerta</b>, saca el <b>cajón</b>, levanta la <b>bolsa</b> (el cordón la cierra) y déjala al lado.</li>
+<li>Pon una <b>bolsa nueva</b> (compartimento del frente del cajón), mete el cajón y cierra la puerta.</li></ol></div></details>
+<details><summary>Qué es y medidas</summary><div class="in"><p>Triturador doméstico de residuos orgánicos <b>sin motor ni electricidad</b>. Se mueve con dos pedales. Cuerpo de 38 × 40 × 68 cm (medidas del modelo hogar) más 7 cm del carter de la transmisión y del canal izquierdo: <b>45 × 40 × 68 cm</b>.</p><ul><li>Cuerpo, tapa, puerta y cajón: polipropileno rotomoldeado (una sola pieza para el cuerpo, incluidos los depósitos de aserrín).</li><li>Cámara, embudo, cuchillas y separadores: acero inoxidable 304.</li><li>Ejes, engranajes, cadena, volante y resortes: acero; bocines de bronce.</li><li>Empaques: EPDM. Filtro: 250 g de carbón activado.</li><li>Cajón de 20 L con bolsa compostable; aviso de lleno a 10,2 kg (85 %).</li></ul></div></details>
+<details><summary>1 · Seguro infantil (sistema rojo)</summary><div class="in"><p><b>¿Cómo "sabe" el pedal que la tapa está abierta?</b> No hay sensores: es una cadena de piezas de acero.</p><ol><li>La <b>lengüeta roja</b> de la tapa entra en una ranura del marco solo cuando la tapa está cerrada y el gancho la aprieta.</li><li>La lengüeta baja 4 mm el <b>pulsador</b> del marco.</li><li>El pulsador empuja la <b>varilla roja</b> que baja por la esquina delantera derecha.</li><li>Abajo, una <b>escuadra</b> convierte ese movimiento en horizontal…</li><li>…y saca el <b>pasador rojo</b> de debajo de la palanca del pedal.</li></ol><p>Con la tapa abierta, un resorte sube el pulsador y el pasador vuelve a entrar: el pedal choca con él a 1,5 mm y los rodillos no giran. Además, al soltar el gancho, el <b>cable de freno</b> baja una zapata sobre el volante (paro en menos de 1 s), y con la <b>puerta frontal abierta</b> sus pulsadores meten un segundo pasador bajo cada pedal.</p><button data-view="seguro">Mostrarme</button></div></details>
+<details><summary>2 · Transmisión a pedal</summary><div class="in"><ol><li>Pedal con pivote atrás: el extremo que pisas baja 5,5 cm.</li><li>La palanca empuja una <b>cremallera</b> 33 mm.</li><li>La cremallera gira un <b>piñón con rueda libre</b>: al bajar, sus uñas se traban en una rueda de dientes de sierra fija al eje; al subir, resbalan (clic) y el eje sigue girando.</li><li><b>Cadena 24:8</b>: el eje del volante gira 3 veces más rápido.</li><li><b>Volante de 1,45 kg</b>: guarda unos 12 J por pisada y los entrega cuando las cuchillas muerden algo duro.</li><li><b>Reductor 10:50</b> y engranajes 1:1: los rodillos giran a unas 150 rpm, en sentidos opuestos y hacia el centro.</li></ol><p>Un resorte de torsión en el pivote sube el pedal; no mueve la cremallera.</p><button data-view="transmision">Mostrarme</button></div></details>
+<details><summary>3 · Rodillos trituradores</summary><div class="in"><p>Dos ejes hexagonales con 10 y 9 cuchillas de gancho de Ø 72 mm, intercaladas con separadores: las cuchillas de un eje pasan entre las del otro con 1 mm de holgura. El embudo en V de 62° lleva todo a la mordida y termina a 2 mm de las cuchillas. Un peine fijo despega la pulpa. Sale material de 5-13 mm, ideal para compostar, y cae <b>directo a la bolsa</b>.</p><button data-view="rodillos">Mostrarme</button></div></details>
+<details><summary>4 · Aserrín dosificado (pedal izquierdo)</summary><div class="in"><p>El depósito en U (≈ 5 L) rodea la cámara por atrás y por los lados: es el hueco que ya deja el cuerpo, así que casi no cuesta. Al pisar el pedal izquierdo, un cable desliza 15 mm una <b>placa de celdas en U</b>: las celdas llenas pasan sobre las ranuras del piso y cae una dosis fija (~30 mL) por <b>atrás, izquierda y derecha</b>, que tapa lo recién molido. Al soltar, un resorte regresa la placa y las celdas se vuelven a llenar: nunca cae de más.</p><p>El aserrín absorbe el agua libre (la que carga el olor), sube el carbono y mantiene la pulpa aireada, así no se pudre. Se recarga bajo la tapa principal, sin otra puerta hacia afuera.</p><button data-view="aserrin">Mostrarme</button></div></details>
+<details><summary>5 · Control de olores sin electricidad</summary><div class="in"><ol><li><b>Sello</b>: empaque EPDM apretado 3,5 mm por el gancho (arriba) y empaque en la puerta (frente).</li><li><b>Fuelle</b> en el pedal derecho: cada pisada saca ~0,3 L de aire por una <b>rejilla atrás del compartimento del cajón, justo encima de la bolsa</b>, que es donde se junta el olor. La cámara de molido se ventila por el mismo camino, porque está abierta hacia el cajón. El interior queda en leve vacío: el aire entra al equipo, nunca sale a la cocina.</li><li><b>Carbón activado</b> (250 g): todo el aire que sale pasa por él.</li><li><b>Válvula de una sola vía</b>: es la única salida. Deja salir el aire filtrado y los gases que suelta la pulpa al descomponerse entre usos, pero nunca deja entrar aire de vuelta.</li><li><b>Aserrín</b>: cada dosis tapa la capa nueva.</li><li><b>Bolsa con cordón</b>: se cierra sola al levantarla.</li></ol><p>Consejo: antes de abrir el frente, pisa 3 veces el pedal derecho.</p><button data-view="olor">Mostrarme</button></div></details>
+<details><summary>6 · Báscula e indicador (sistema azul)</summary><div class="in"><p>Sin engranajes ni piezas compradas: 4 resortes, un alambre, una palanca troquelada y un adhesivo impreso.</p><ol><li>El cajón descansa en una bandeja sobre <b>4 resortes</b> que suman 9,81 N/mm: cada kilo la baja 1 mm (ley de Hooke: F = k·x).</li><li>Un <b>alambre</b> baja con la bandeja y tira del brazo corto (9 mm) de una <b>palanca en L</b>.</li><li>El brazo largo de esa palanca <b>es la flecha</b>: gira unos 6° por kilo sobre una <b>lámina de colores</b> detrás de una ventana. 12,5 kg recorren 80°.</li><li>Cuando la flecha entra al rojo (10,2 kg), el brazo de abajo de la misma palanca empuja una varilla que levanta el <b>trinquete</b> de la puerta: se destraba.</li></ol><button data-view="bascula">Mostrarme</button></div></details>
+<details><summary>7 · Puerta, cajón y bolsa</summary><div class="in"><p>Puerta con bisagra abajo y resorte compensador: baja suave y queda horizontal como repisa. El cajón se desliza sobre dos guías bajas y sale sobre la puerta abierta; tiene un tope. La bolsa encaja por su borde elástico; al levantarla, el cordón la cierra. En el frente del cajón hay 10 bolsas de reserva.</p><button data-view="puerta">Mostrarme</button></div></details>
+<details><summary>Cómo se arma (orden de montaje)</summary><div class="in"><ol>
+<li>Rotomoldear el cuerpo en PP con base, carter, canal y depósito en U.</li>
+<li>Montar la cámara de inox con su embudo en V y los bocines de bronce.</li>
+<li>Armar los rodillos: cuchillas y separadores intercalados en los ejes hexagonales; engranajes 1:1; verificar 1 mm de holgura.</li>
+<li>En el carter: corona de 50 dientes, piñón de 10, volante, cadena 24:8 y piñón con rueda libre.</li>
+<li>Pedales con pivote y resorte de torsión, cremallera, fuelle, colector y manguera al carbón.</li>
+<li>Sistema rojo: pulsador, varilla, escuadra, pasadores y cable de freno. Probar 100 veces que el pedal no baje con la tapa abierta.</li>
+<li>Báscula: resortes, bandeja, varilla, palanca, cremallera y dial. Calibrar el cero con el cajón vacío y una pesa de 5 kg.</li>
+<li>Dosificador: placa en U, resorte, cable y polea. Verificar la dosis de 30 mL.</li>
+<li>Puerta con bisagras y trinquete; rieles; cajón con bolsa y bolsas de reserva.</li>
+<li>Tapa con bisagra de piano, empaque, gancho y rótulo; carbón y válvula. Prueba de hermeticidad.</li></ol></div></details>
+<details><summary>Lista de piezas</summary><div class="in"><table class="bom"><tr><th>Pieza</th><th>Material · medida</th></tr>${Object.values(TXT).filter(v => v[0]).map(v => `<tr><td>${v[0]}</td><td>${v[1]}</td></tr>`).join('')}</table></div></details>`;
+$('pManual').innerHTML = MANUAL;
+{ // medidas calculadas de la geometría real del modelo
+  const cm = (m) => fmt(m * 100, m * 100 % 1 ? 1 : 0);
+  const W = D.carter.x1 - D.chanL.x0, Dp = (T.padZ + 0.0425) - (-D.DP / 2 - 0.016), liftH = lid.hingeY + lid.L * Math.sin(1.83) + D.lidT * Math.cos(1.83), front = door.h + 0.005;
+  $('dims').innerHTML = `<b>Medidas del equipo</b>
+  <div class="r"><span>Alto</span><span>${cm(D.H)} cm · ${cm(liftH)} con tapa abierta</span></div>
+  <div class="r"><span>Ancho</span><span>${cm(W)} cm (cuerpo ${cm(D.W)} + transmisión y canal)</span></div>
+  <div class="r"><span>Fondo</span><span>${cm(Dp)} cm (cuerpo ${cm(D.DP)} + pedales)</span></div>
+  <div class="r"><span>Ocupa en el piso</span><span>${cm(W)} × ${cm(Dp)} cm</span></div>
+  <div class="r"><span>Para vaciar</span><span>+${cm(front)} cm libres al frente</span></div>
+  <div class="r"><span>Cajón</span><span>34 × 30 × 20 cm · 20 L</span></div>`;
+}
+$('pManual').querySelectorAll('[data-view]').forEach(b => b.onclick = () => showView(b.dataset.view));
+function showView(k) { const v = VIEWS[k]; if (!v) return; if (EXPL.target > 0) { EXPL.target = 0; $('sExp').value = 0; $('vExp').textContent = '0%'; } camTo(v.cam); if (innerWidth < 900) { $('left').classList.remove('open'); document.querySelector('[data-open="left"]').classList.remove('on'); } if (v.trans != null) setTrans(Math.max(transT * 100, v.trans)); setCallouts(v.call ? CALLSETS[v.call]() : []); }
+
+// =====================================================================
+//  ACCIONES
+// =====================================================================
+const toastLast = {};
+function toast(msg, type = '', keyT = msg, cool = 2500) {
+  const now = performance.now(); if (toastLast[keyT] && now - toastLast[keyT] < cool) return; toastLast[keyT] = now;
+  const d = document.createElement('div'); d.className = 'toast ' + type; d.textContent = msg; $('toasts').appendChild(d);
+  setTimeout(() => { d.style.transition = 'opacity .4s'; d.style.opacity = 0; setTimeout(() => d.remove(), 400); }, 4600);
+  while ($('toasts').children.length > 3) $('toasts').firstChild.remove();
+}
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+let SEQ = 0; // cada acción nueva cancela la anterior (nada se queda "trabado")
+async function until(fn, ms, id) { const t0 = performance.now(); while (!fn() && performance.now() - t0 < ms && id === SEQ) await wait(25); return fn(); }
+function actLatch() {
+  if (S.latT > 0.5) { S.latT = 0; return; }
+  S.latT = 1; setTimeout(() => { if (!S.engaged && S.lat > 0.5) toast('El gancho se cerró en vacío: la tapa no estaba abajo. Ábrelo, baja la tapa y ciérralo otra vez para que apriete el empaque.', 'warn'); }, 450);
+}
+async function openLid() { const id = ++SEQ; if (S.latT > 0.5 || S.lat > 0.1) { S.latT = 0; await until(() => S.lat < 0.05, 700, id); } if (id !== SEQ) return; S.lidHand = K.thMax; await until(() => S.th > 1.72, 2000, id); if (id === SEQ) S.lidHand = null; }
+async function closeLid() { const id = ++SEQ; S.lidHand = 0; await until(() => S.th < 0.3, 2000, id); if (id !== SEQ) return; S.lidHand = null; await until(() => S.th < K.thSeat + 0.002, 2000, id); if (id !== SEQ) return; await wait(120); S.latT = 1; }
+function actLid() { if (S.th > 0.5) closeLid(); else openLid(); }
+async function actWaste() { if (S.th < 1.0) { toast('Primero se suelta el gancho y se abre la tapa.'); await openLid(); } dropPortion(); audioInit(); }
+async function actDoor() {
+  const id = ++SEQ;
+  if (S.de < 0.3) {
+    if (S.doorLatched) { S.doorHand = 0.12; await wait(220); S.doorHand = null; toast(`La puerta sigue trabada: el cajón pesa ${fmt(Math.max(0, scaleReading()))} kg y el trinquete se libera en 10,2 kg (zona roja).`, 'warn', 'doorlock'); return; }
+    S.doorHand = Math.PI / 2; await until(() => S.de > 1.56, 1800, id); if (id === SEQ) S.doorHand = null;
+  } else {
+    if (S.e > 0.01) toast('Primero mete el cajón: la puerta choca con él.', 'warn');
+    S.doorHand = 0; await until(() => S.de < 0.004, 1800, id); await wait(150); if (id === SEQ) S.doorHand = null;
+  }
+}
+async function actDrawer() {
+  const id = ++SEQ;
+  if (S.e < 0.12) { if (S.de < 1.5) toast('El cajón no puede salir: la puerta frontal está cerrada delante de él.', 'warn', 'drw'); S.drawerHand = 0.26; await until(() => S.e > 0.255, 1500, id); }
+  else { S.drawerHand = 0; await until(() => S.e < 0.002, 1500, id); }
+  if (id === SEQ) S.drawerHand = null;
+}
+function actBag() {
+  if (S.e < 0.24) { toast('Saca el cajón del todo para cambiar la bolsa.', 'warn'); return; }
+  if (bag.state === 'in') autoSack(); else if (bag.state === 'none') { bag.state = 'inserting'; bag.t = 0; }
+}
+async function autoSack() { const sk = grabBag(); if (!sk) return; const side = [[0.45, 0.35, 0.42], [0.62, 0.3, 0.1], [-0.45, 0.3, 0.42]][Math.min(2, SACKS.length - 1)]; await wait(300); sk.tx = side[0]; sk.ty = side[1]; sk.tz = side[2]; await wait(900); sk.held = false; }
+function toggleHatch() {
+  if (hatch.aT < 0.5) { if (S.th < 1.2) { toast('La tapa del aserrín está debajo de la tapa principal: primero abre la tapa principal.', 'warn', 'hatch'); return false; } hatch.aT = 1.3; setTimeout(pourSaw, 700); }
+  else hatch.aT = 0; return true;
+}
+function pourSaw() { if (hatch.a < 1) return; const need = SAW.cap - S.sawG; if (need <= 1) { toast('El depósito ya está lleno.'); return; } hatch.pour = 1.6; toast('Vertiendo aserrín en el depósito en U…'); }
+async function autoRefill() { if (S.th < 1.2) await openLid(); if (hatch.aT < 0.5) toggleHatch(); await wait(2600); if (hatch.aT > 0.5) toggleHatch(); }
+function refillSaw() { toggleHatch(); }
+function resetAll() {
+  ++SEQ; P.length = 0; heapReset(); bag.state = 'in'; bag.grp.visible = true; bagShape(0, 0);
+  for (const s of SACKS) machine.remove(s.grp); SACKS.length = 0;
+  Object.assign(S, { th: 0, om: 0, lidHand: null, lat: 1, latT: 1, engaged: true, sR: 0, vR: 0, wB: 0, auto: false, autoPress: false, sL: 0, vL: 0, saw: 0, sawG: 700, sawArmed: true, doses: 0, de: 0, wd: 0, doorHand: null, doorLatched: true, e: 0, ve: 0, drawerHand: null, key: 0, spilled: 0, lockR: 0, lockL: 0, lockD: 0 });
+  S.x = (D.tray.m + tareKg) * g / K.kTray; G0.triedLock = false; hatch.a = hatch.aT = 0; hatch.pour = 0;
+}
+S.x = (D.tray.m + tareKg) * g / K.kTray;
+
+// =====================================================================
+//  MODOS, GUÍA Y VISTA
+// =====================================================================
+let MODE = 'manual';
+function setMode(m) {
+  MODE = m; document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  $('pFree').style.display = m === 'free' ? '' : 'none'; $('pManual').style.display = m === 'manual' ? '' : 'none';
+  setCallouts([]);
+}
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+const CAMS = {
+  fr: [[1.05, 0.78, 1.35], [0.0, 0.32, 0.04]], fl: [[-1.1, 0.88, 1.2], [0.02, 0.3, 0.02]], side: [[1.45, 0.62, 0.7], [0.02, 0.3, 0]],
+  gen: [[1.05, 0.82, 1.25], [0.02, 0.33, 0.02]], front: [[0.25, 0.55, 1.5], [0.02, 0.33, 0.05]], mech: [[1.3, 0.46, 0.5], [0.1, 0.3, 0.02]],
+  top: [[0.45, 1.3, 1.05], [0, 0.36, 0]], grind: [[0.5, 0.72, 0.6], [0, 0.46, 0]], drawer: [[0.62, 0.52, 1.1], [0, 0.14, 0.2]], scale: [[0.88, 0.34, 1.08], [-0.01, 0.22, 0.1]],
+};
+let camTween = null;
+// distancia para que TODO el equipo (esfera de 0,55 m) quepa en la pantalla, sea horizontal o vertical
+function fitDist(r = 0.55) { const v = camera.fov * Math.PI / 180, h = 2 * Math.atan(Math.tan(v / 2) * camera.aspect); const mob = innerWidth < 900 ? 0.98 : 1.18; return mob * r / Math.sin(Math.min(v, h) / 2); }
+const REF_DIST = 1.78; // distancia de las vistas pensadas para una pantalla de computador
+function scaled([p, t], full) { const P = new THREE.Vector3(...p), Tt = new THREE.Vector3(...t), d = P.distanceTo(Tt), k = Math.max(1, fitDist() / REF_DIST); const nd = full ? Math.max(d, fitDist()) : d * k; return [Tt.clone().add(P.sub(Tt).normalize().multiplyScalar(nd)).toArray(), Tt.toArray()]; }
+function camTo(v, dur = 0.9, full = false) { const [p, t] = scaled(v, full); camTween = { t: 0, d: dur, p0: camera.position.clone(), t0: controls.target.clone(), p1: new THREE.Vector3(...p), t1: new THREE.Vector3(...t) }; }
+function fitNow() { const [p, t] = scaled(CAMS.gen, true); camera.position.set(...p); controls.target.set(...t); controls.update(); }
+document.querySelectorAll('[data-cam]').forEach(b => b.onclick = () => { camTo(CAMS[b.dataset.cam], 0.9, b.dataset.cam === 'gen'); if (['grind', 'scale', 'mech'].includes(b.dataset.cam) && transT < 0.6) setTrans(70); setCallouts(b.dataset.cam === 'scale' ? CALLSETS.bascula() : b.dataset.cam === 'mech' ? CALLSETS.transmision() : []); });
+const housingMeshes = []; casing.traverse(o => o.isMesh && housingMeshes.push(o));
+let transT = 0.45;
+function setTrans(v) { $('sTrans').value = v; transT = v / 100; applyTrans(); }
+function applyTrans() {
+  const t = transT; $('vTrans').textContent = Math.round(t * 100) + '%';
+  for (const m of housingMats) { m.transparent = t > 0.01; m.opacity = 1 - 0.9 * t; m.depthWrite = t < 0.25; m.needsUpdate = true; }
+  M.inox.transparent = t > 0.01; M.inox.opacity = 1 - 0.66 * t; M.inox.depthWrite = t < 0.25; M.inox.needsUpdate = true;
+  housingMeshes.forEach(o => o.castShadow = t < 0.5);
+  [lid.pivot, door.pivot].forEach(gp => gp.traverse(o => { if (o.isMesh && housingMats.includes(o.material)) o.castShadow = t < 0.5; }));
+}
+$('sTrans').oninput = (e) => { transT = e.target.value / 100; applyTrans(); };
+let expHint = false;
+$('sExp').oninput = (e) => {
+  EXPL.target = e.target.value / 100; $('vExp').textContent = e.target.value + '%';
+  if (EXPL.target > 0 && !expHint) { expHint = true; toast('Despiece: haz clic en cualquier pieza para verla de cerca y recorrerlas una por una.'); }
+  if (EXPL.target === 0) { clearGhost(false); $('detail').style.display = 'none'; }
+  S.footR = S.footL = S.auto = false; S.lidHand = S.doorHand = S.drawerHand = null; setCallouts([]);
+};
+$('bOdor').onclick = () => { VIEW.seals = !VIEW.seals; $('bOdor').classList.toggle('on', VIEW.seals); if (VIEW.seals) toast('Verde = sello apretado · rojo = abierto. Puntos cafés = aire con olor; naranja = olor que escapa; azul = aire ya filtrado por el carbón.'); };
+$('bSound').onclick = () => { AU.on = !AU.on; $('bSound').classList.toggle('on', AU.on); };
+$('rTtl').onclick = () => { $('right').classList.toggle('min'); $('rTg').textContent = $('right').classList.contains('min') ? '+' : '–'; };
+
+// ---- botones del modo libre ----
+$('bLatch').onclick = () => { audioInit(); actLatch(); };
+$('bLid').onclick = () => { audioInit(); actLid(); };
+$('bWaste').onclick = () => actWaste();
+$('bDoor').onclick = () => { audioInit(); actDoor(); };
+$('bDrawer').onclick = () => { audioInit(); actDrawer(); };
+$('bBag').onclick = () => actBag();
+$('bKey').onclick = () => { S.key = 6; toast('Llave del operario: el trinquete queda liberado 6 segundos.'); };
+$('bAuto').onclick = () => { audioInit(); S.auto = !S.auto; };
+$('bDays').onclick = () => { if (bag.state !== 'in' || S.e > 0.01) { toast('Para simular días de uso el cajón debe estar adentro y con bolsa.', 'warn'); return; } addDays(5); toast('Se sumaron 5 días de pulpa molida y cubierta con aserrín (2,3 kg).'); };
+$('bReset').onclick = () => resetAll();
+function holdBtn(el, set) {
+  const on = (e) => { e.preventDefault(); audioInit(); set(true); el.classList.add('pressed'); };
+  const off = () => { set(false); el.classList.remove('pressed'); };
+  el.addEventListener('pointerdown', on); ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => el.addEventListener(ev, off));
+}
+holdBtn($('bPedR'), v => S.footR = v); holdBtn($('bPedL'), v => S.footL = v);
+addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.repeat) return; audioInit(); const k = e.key.toLowerCase();
+  if (e.code === 'Space') { S.footR = true; e.preventDefault(); } else if (k === 'c') S.footL = true;
+  else if (k === 't') actLid(); else if (k === 'g') actLatch(); else if (k === 'r') actWaste(); else if (k === 'f') actDoor(); else if (k === 'd') actDrawer(); else if (k === 'p') S.auto = !S.auto;
+  else if (EXPL.u > 0.3 && (k === 'arrowright' || k === 'arrowleft')) cyclePart(k === 'arrowright' ? 1 : -1);
+  else if (k === 'escape') clearGhost();
+});
+addEventListener('keyup', (e) => { if (e.code === 'Space') S.footR = false; if (e.key.toLowerCase() === 'c') S.footL = false; });
+
+// =====================================================================
+//  MANO VIRTUAL: arrastrar, mantener, doble clic
+// =====================================================================
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), tip = $('tip');
+let drag = null;
+function pick(e) {
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const skipHousing = transT > 0.3 && EXPL.u < 0.3;
+  for (const h of ray.intersectObjects(pickables.concat(SACKS.map(s => s.grp)), true)) { const o = h.object; if (!o.visible || !o.userData.info) continue; if (skipHousing && housingMeshes.includes(o)) continue; return h; }
+  return null;
+}
+const DRAG = { tapa: 'lid', tapaAsa: 'lid', empaque: 'lid', una: 'lid', lengueta: 'lid', etiqueta: 'lid', gancho: 'latch', estribo: 'latch', pedalR: 'pedR', pedalL: 'pedL', puerta: 'door', puertaAsa: 'door', empaquePuerta: 'door', cajon: 'drawer', cajonAsa: 'drawer', rejilla: 'drawer', bolsa: 'bag', monton: 'bag', cordon: 'bag', saco: 'sack', tolva: 'waste', embudo: 'waste', tapaRecarga: 'hatch', reserva: 'reserva' };
+function planeHit(e, normal, point) { ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, point); const out = new THREE.Vector3(); return ray.ray.intersectPlane(pl, out) ? out : null; }
+const camPlaneN = () => { const n = new THREE.Vector3(); camera.getWorldDirection(n); n.y = 0; return n.normalize(); };
+canvas.addEventListener('pointermove', (e) => {
+  if (drag) { dragMove(e); return; }
+  const h = pick(e), inf = h ? h.object.userData.info : null;
+  if (inf && inf.name) {
+    if (!GHOST.inf) tint(inf); tip.style.display = 'block';
+    tip.innerHTML = `<b>${inf.name}</b>${inf.mat ? `<span class="mat">${inf.mat}</span>` : ''}${inf.desc}${inf.act && EXPL.u < 0.02 ? `<span class="act">${inf.act}</span>` : ''}${EXPL.u > 0.02 ? '<span class="act">Clic: ver de cerca</span>' : ''}`;
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - 330) + 'px'; tip.style.top = Math.min(e.clientY + 16, innerHeight - tip.offsetHeight - 10) + 'px';
+    canvas.style.cursor = EXPL.u > 0.02 ? 'zoom-in' : DRAG[inf.key] ? 'grab' : 'help';
+  } else { untint(); tip.style.display = 'none'; canvas.style.cursor = 'default'; }
+});
+canvas.addEventListener('pointerleave', () => { tip.style.display = 'none'; untint(); });
+canvas.addEventListener('pointerdown', (e) => {
+  if (e.button !== 0) return; audioInit();
+  const h = pick(e); if (!h) return; const inf = h.object.userData.info, k = inf?.key;
+  if (EXPL.u > 0.02) { drag = { kind: 'focus', inf, obj: h.object, x0: e.clientX, y0: e.clientY, t0: performance.now(), moved: false }; return; }
+  let kind = DRAG[k]; if (!kind) return;
+  if (kind === 'bag' && !(S.e > 0.24 && bag.state === 'in')) kind = S.e > 0.24 ? null : 'drawer';
+  if (!kind) return;
+  controls.enabled = false; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing';
+  drag = { kind, x0: e.clientX, y0: e.clientY, t0: performance.now(), hit: h.point.clone(), moved: false };
+  if (kind === 'lid') drag.off = Math.atan2(h.point.y - lid.hingeY, h.point.z - lid.hingeZ) - S.th;
+  if (kind === 'door') drag.off = Math.atan2(h.point.z - door.z, h.point.y - door.y) - S.de;
+  if (kind === 'drawer') drag.e0 = S.e;
+  if (kind === 'pedR') S.footR = true;
+  if (kind === 'pedL') S.footL = true;
+  if (kind === 'bag') { const sk = grabBag(); if (sk) { drag.kind = 'sack'; drag.sack = sk; drag.hit.set(sk.x, sk.y + 0.25, sk.z); } }
+  if (kind === 'sack') { drag.sack = h.object.userData.sack || SACKS.find(s => s.grp === h.object.parent); if (drag.sack) { drag.sack.held = true; drag.sack.tx = drag.sack.x; drag.sack.ty = drag.sack.y + 0.05; drag.sack.tz = drag.sack.z; } }
+});
+function dragMove(e) {
+  if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 4) drag.moved = true;
+  if (!drag.moved) return;
+  if (drag.kind === 'lid') { const p = planeHit(e, new THREE.Vector3(1, 0, 0), drag.hit); if (p) S.lidHand = clamp(Math.atan2(p.y - lid.hingeY, p.z - lid.hingeZ) - drag.off, -0.05, 1.95); if (S.engaged && S.lat > 0.5) toast('La tapa está enganchada: primero suelta el gancho verde del frente.', 'warn', 'lidlocked'); }
+  if (drag.kind === 'door') { const p = planeHit(e, new THREE.Vector3(1, 0, 0), drag.hit); if (p) S.doorHand = clamp(Math.atan2(p.z - door.z, p.y - door.y) - drag.off, -0.05, 1.62); if (S.doorLatched) toast(`Trabada por el trinquete: marca ${fmt(Math.max(0, scaleReading()))} kg y se libera en 10,2 kg.`, 'warn', 'doorlock'); }
+  if (drag.kind === 'drawer') { const p = planeHit(e, new THREE.Vector3(0, 1, 0), drag.hit); if (p) S.drawerHand = clamp(drag.e0 + (p.z - drag.hit.z), 0, 0.27); }
+  if (drag.kind === 'sack' && drag.sack) { const p = planeHit(e, camPlaneN(), drag.hit); if (p) { drag.sack.tx = p.x; drag.sack.ty = Math.max(0.02, p.y - 0.12); drag.sack.tz = p.z; } }
+}
+function endDrag() {
+  if (!drag) return; const d = drag; drag = null; controls.enabled = true; canvas.style.cursor = 'default';
+  const click = !d.moved && performance.now() - d.t0 < 450;
+  if (d.kind === 'focus') { if (click) focusPart(d.inf, d.obj); return; }
+  if (d.kind === 'lid') S.lidHand = null;
+  if (d.kind === 'door') S.doorHand = null;
+  if (d.kind === 'drawer') S.drawerHand = null;
+  if (d.kind === 'latch' && click) actLatch();
+  if (d.kind === 'waste' && click) actWaste();
+  if (d.kind === 'hatch' && click) toggleHatch();
+  if (d.kind === 'reserva' && click) { if (bag.state === 'none' && S.e > 0.24) { bag.state = 'inserting'; bag.t = 0; } else toast(bag.state === 'none' ? 'Saca el cajón del todo para poner la bolsa.' : 'Aquí hay 10 bolsas de reserva dobladas.'); }
+  if (d.kind === 'sack' && d.sack) d.sack.held = false;
+  if (d.kind === 'pedR') S.footR = false;
+  if (d.kind === 'pedL') S.footL = false;
+  if ((d.kind === 'lid' || d.kind === 'door' || d.kind === 'drawer') && click) toast('Arrastra para moverla con la mano o haz doble clic para abrir/cerrar.', '', 'hint-dbl', 8000);
+}
+canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('dblclick', (e) => {
+  if (EXPL.u > 0.02) { if (!pick(e)) clearGhost(); return; } const h = pick(e); if (!h) return; const k = DRAG[h.object.userData.info?.key];
+  if (k === 'lid') actLid(); else if (k === 'door') actDoor(); else if (k === 'drawer') actDrawer();
+});
+// ---- despiece: ver cada pieza de cerca ----
+let focusIdx = -1;
+// modo foco: la pieza elegida queda sólida y todo lo demás casi transparente
+const GHOST = { inf: null, mat: new THREE.MeshStandardMaterial({ color: 0xc9d3cc, transparent: true, opacity: 0.05, depthWrite: false, roughness: 0.8 }) };
+function setGhost(inf) {
+  untint(); GHOST.inf = inf; const keep = new Set(meshesOf(inf));
+  machine.traverse(o => { if (!o.isMesh && !o.isInstancedMesh) return; if (keep.has(o)) { if (o.userData.gOrig) { o.material = o.userData.gOrig; o.userData.gOrig = null; } o.castShadow = true; } else if (!o.userData.gOrig) { o.userData.gOrig = o.material; o.material = GHOST.mat; } });
+}
+function clearGhost(frame = true) {
+  if (!GHOST.inf) return; GHOST.inf = null; machine.traverse(o => { if (o.userData.gOrig) { o.material = o.userData.gOrig; o.userData.gOrig = null; } });
+  $('detail').style.display = 'none'; if (frame && EXPL.u > 0.02) camTo([[1.6, 1.25, 1.9], [0.02, 0.36, 0.1]], 0.8);
+}
+function focusPart(inf, obj) {
+  if (!inf) return; focusIdx = EXPL.parts.findIndex(p => p.info === inf); if (focusIdx < 0) focusIdx = 0; setGhost(inf);
+  _bb.makeEmpty(); for (const m of meshesOf(inf)) _bb.expandByObject(m); if (_bb.isEmpty()) _bb.setFromObject(obj);
+  const c = _bb.getCenter(new THREE.Vector3()), r = Math.max(0.05, _bb.getSize(new THREE.Vector3()).length() * 0.9);
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  camTo([c.clone().addScaledVector(dir, r * 1.8 + 0.08).toArray(), c.toArray()], 0.7);
+  const dt2 = $('detail'); dt2.style.display = 'block';
+  dt2.innerHTML = `<b>${inf.name}</b><div class="mat">${inf.mat || ''}</div><p>${inf.desc}</p><p class="sub" style="margin-top:6px">Gira alrededor de la pieza arrastrando; acércate con la rueda.</p><div class="gnav" style="margin-top:8px"><button id="dPrev">‹ Anterior</button><span class="sub">${focusIdx + 1} / ${EXPL.parts.length}</span><button id="dNext">Siguiente ›</button></div><button id="dAll" class="pri" style="width:100%;margin-top:8px">Ver todas las piezas (Esc)</button>`;
+  $('dPrev').onclick = () => cyclePart(-1); $('dNext').onclick = () => cyclePart(1); $('dAll').onclick = () => clearGhost();
+}
+function cyclePart(d) { if (!EXPL.parts.length) return; focusIdx = (focusIdx + d + EXPL.parts.length) % EXPL.parts.length; const p = EXPL.parts[focusIdx]; focusPart(p.info, p.mesh); }
+
+// =====================================================================
+//  PANEL DE ESTADO Y EVENTOS
+// =====================================================================
+const pill = (t, c) => `<span class="pill p-${c}">${t}</span>`;
+let uiT = 0, sPrevR = 0;
+function updateUI(dt) {
+  if (EV.lockBlockR) { EV.lockBlockR = 0; G0.triedLock = true; toast(EV.lockWhyR === 'lid' ? 'Seguro infantil: el pedal choca con el pasador rojo porque la tapa no está cerrada y apretada por el gancho.' : 'Con la puerta frontal abierta, su pulsador mete un pasador rojo bajo el pedal: no se puede moler con el cajón afuera.', 'bad', 'lockR' + EV.lockWhyR, 3500); }
+  if (EV.lockBlockL) { EV.lockBlockL = 0; toast('El pedal del aserrín está bloqueado: con la puerta frontal abierta el aserrín caería afuera.', 'bad', 'lockL', 3500); }
+  if (EV.dose) { EV.dose = 0; spawnSawdust(); toast('Dosis de aserrín (≈ 30 mL): cae por atrás, izquierda y derecha sobre lo recién molido.', '', 'dose', 4000); blip(300, 0.15, 0.05, 'triangle'); }
+  if (EV.noSaw) { EV.noSaw = 0; toast('El depósito de aserrín está vacío: ábrelo bajo la tapa y recárgalo.', 'warn', 'nosaw'); }
+  if (sPrevR < 0.04 && S.sR >= 0.04) G0.strokes++; sPrevR = S.sR;
+  uiT -= dt; if (uiT > 0) return; uiT = 0.1;
+  const comp = S.engaged ? latchComp(S.lat) : 0, kg = scaleReading(), wC = S.wB / T.red;
+  $('oLid').innerHTML = S.th > 0.05 ? pill(`abierta ${Math.round(S.th * 57.3)}°`, 'warn') : sealed() ? pill('cerrada y sellada', 'ok') : pill('cerrada sin gancho', 'mid');
+  $('oSeal').innerHTML = comp > 0.0002 ? `${fmt(comp * 1000)} mm` : (S.th < K.thSeat + 0.001 ? 'apoyado, sin apretar' : 'sin contacto');
+  $('oLock').innerHTML = (S.lockR > 0.5 || S.lockD > 0.5) ? pill(S.lockR > 0.5 ? 'BLOQUEADO (tapa)' : 'BLOQUEADO (puerta)', 'bad') : pill('liberado', 'ok');
+  $('oPedR').textContent = `${fmt(S.sR * 1000, 0)} mm · ${S.engagedFW && S.vR > 0.01 ? 'empuja' : 'rueda libre'}`;
+  $('oFly').textContent = `${Math.round(S.wB * 60 / TAU)} rpm · ${fmt(0.5 * K.IB * S.wB * S.wB)} J`;
+  $('oRoll').innerHTML = wC > 0.3 ? `${Math.round(wC * 60 / TAU)} rpm${S.loadC > 0 ? ' · ' + pill('moliendo', 'warn') : ''}` : 'quietos';
+  const raw = P.filter(p => p.type !== 'aserrin' && p.y > 0.3).reduce((a, p) => a + p.m, 0);
+  $('oRaw').textContent = `${Math.round(raw * 1000)} g`;
+  $('oGate').textContent = `${Math.round(S.sawG)} g · ${Math.floor(S.sawG / SAW.dose)} dosis`;
+  $('oOnGate').textContent = S.bagMass > 0.05 ? `${Math.round((1 - heapUncovered()) * 100)} %` : '—';
+  const cls = kg >= K.redKg ? 'bad' : kg >= 7 ? 'warn' : 'ok';
+  $('oBin').innerHTML = S.e > 0.02 ? pill(bag.state === 'none' ? 'afuera · sin bolsa' : `afuera · ${fmt(S.bagMass)} kg`, 'mid') : pill(`${fmt(Math.max(0, kg))} kg · ${Math.round(clamp(kg, 0, 99) / K.fullKg * 100)} %`, cls);
+  $('oDoor').innerHTML = S.de > 0.03 ? pill(`abierta ${Math.round(S.de * 57.3)}°`, 'warn') : S.doorLatched ? pill('trabada', 'mid') : pill('destrabada', 'ok');
+  $('oNeedle').style.left = clamp(kg / K.fullKg * 100, 0, 100) + '%';
+  $('oE').style.width = clamp(0.5 * K.IB * S.wB * S.wB / 25 * 100, 0, 100) + '%';
+  $('oLoad').style.width = clamp(S.loadC / 12 * 100, 0, 100) + '%';
+  $('bAuto').classList.toggle('on', S.auto); $('bAuto').textContent = S.auto ? 'Detener pedaleo rítmico (P)' : 'Pedaleo rítmico automático (P)';
+  $('bPedR').classList.toggle('pressed', S.footR || S.autoPress); $('bPedL').classList.toggle('pressed', S.footL);
+  $('bLatch').innerHTML = (S.latT > 0.5 ? 'Soltar gancho' : 'Cerrar gancho') + ' <kbd>G</kbd>';
+  $('bLid').innerHTML = (S.th > 0.5 ? 'Cerrar tapa' : 'Abrir tapa') + ' <kbd>T</kbd>';
+  $('bDoor').innerHTML = (S.de > 0.3 ? 'Cerrar puerta' : 'Abrir puerta') + ' <kbd>F</kbd>'; $('bDoor').classList.toggle('dis', S.doorLatched && S.de < 0.01);
+  $('bDrawer').innerHTML = (S.e > 0.12 ? 'Meter cajón' : 'Sacar cajón') + ' <kbd>D</kbd>'; $('bDrawer').classList.toggle('dis', S.de < 1.5 && S.e < 0.01);
+  $('bBag').textContent = bag.state === 'none' ? 'Poner bolsa nueva' : 'Sacar la bolsa llena y dejarla al lado'; $('bBag').classList.toggle('dis', S.e < 0.24);
+}
+addEventListener('resize', () => { const was = camera.aspect; camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); if ((was < 1) !== (camera.aspect < 1)) fitNow(); });
+// ---- menús desplegables (celular): uno a la vez, se cierran al tocar el modelo ----
+const SHEETS = ['left', 'right', 'dims'];
+function openSheet(id) { SHEETS.forEach(k => { $(k).classList.toggle('open', k === id && !$(k).classList.contains('open')); document.querySelector(`[data-open="${k}"]`).classList.toggle('on', $(k).classList.contains('open')); }); }
+document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openSheet(b.dataset.open));
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => { $(b.dataset.close).classList.remove('open'); document.querySelector(`[data-open="${b.dataset.close}"]`).classList.remove('on'); });
+canvas.addEventListener('pointerdown', () => { if (innerWidth < 900) { SHEETS.forEach(k => $(k).classList.remove('open')); document.querySelectorAll('[data-open]').forEach(b => b.classList.remove('on')); } }, true);
+$('bMore').onclick = () => { $('bar').classList.toggle('more'); $('bMore').textContent = $('bar').classList.contains('more') ? 'Vistas ▴' : 'Vistas ▾'; };
+// en celular, al tocar una pieza (sin arrastrar) se muestra su ficha un momento
+canvas.addEventListener('pointerup', (e) => { if (e.pointerType !== 'touch' || drag) return; const h = pick(e), inf = h && h.object.userData.info; if (!inf || !inf.name) return; tip.style.display = 'block'; tip.innerHTML = `<b>${inf.name}</b>${inf.mat ? `<span class="mat">${inf.mat}</span>` : ''}${inf.desc}`; tip.style.left = '8px'; tip.style.top = 'auto'; tip.style.bottom = '96px'; clearTimeout(tip._t); tip._t = setTimeout(() => { tip.style.display = 'none'; tip.style.bottom = ''; }, 5000); });
+
+// =====================================================================
+//  BUCLE PRINCIPAL: física a paso fijo (mecanismos 1080 Hz, partículas 180 Hz)
+// =====================================================================
+applyTrans(); buildExplode(); setMode('manual'); fitNow();
+const clock = new THREE.Clock();
+let acc = 0;
+const DTP = 1 / 180, SUB = 6;
+function frame() {
+  requestAnimationFrame(frame);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  explodeUndo();
+  const paused = EXPL.u > 0.02 || EXPL.target > 0; // en despiece la física se congela
+  if (!paused) {
+    acc += dt; let n = 0;
+    while (acc >= DTP && n < 12) { for (let k = 0; k < SUB; k++) { stepAuto(DTP / SUB); stepMech(DTP / SUB); } stepParticles(DTP); acc -= DTP; n++; }
+    if (n >= 12) acc = 0;
+    heapRelax(2);
+  } else acc = 0;
+  if (camTween) { camTween.t = Math.min(1, camTween.t + dt / camTween.d); const u = smooth(0, 1, camTween.t); camera.position.lerpVectors(camTween.p0, camTween.p1, u); controls.target.lerpVectors(camTween.t0, camTween.t1, u); if (camTween.t >= 1) camTween = null; }
+  updateVisuals(dt);
+  pInst.visible = EXPL.u < 0.02;
+  explodeApply(dt);
+  updateAudio(); updateUI(dt); updateCallouts();
+  controls.update();
+  renderer.render(scene, camera);
+}
+frame();
+setTimeout(() => { const l = $('loading'); l.style.opacity = 0; setTimeout(() => l.remove(), 600); }, 150);
+window.__recoevo = { S, P, K, T, D, HP, SAW, SACKS, EXPL, bag, focusPart, clearGhost, hatch, toggleHatch, dropPortion, addDays, actLid, actLatch, actDoor, actDrawer, actBag, autoSack, grabBag, scaleReading, sealed, heapUncovered, setMode, G0, THREE, openLid, closeLid, autoRefill, scene, camera, renderer, controls };
+</script>
+</body>
+</html>

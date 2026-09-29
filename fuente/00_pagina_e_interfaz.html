@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recoevo Analógico · Prototipo 3D</title>
+<meta name="description" content="Prototipo 3D interactivo del triturador analógico a pedal Recoevo: mecanismos con física real, guía paso a paso, despiece y manual de construcción.">
+<style>
+:root{--bg:#dfe2dc;--panel:rgba(18,24,21,.88);--line:rgba(255,255,255,.09);--txt:#e8ece9;--mute:#9aa7a0;--acc:#63b870;--acc2:#8fd49a;--warn:#f0b43c;--bad:#e5533d}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--txt);-webkit-user-select:none;user-select:none}
+#c{position:fixed;inset:0;display:block;touch-action:none}
+.panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 12px 40px rgba(0,0,0,.28);z-index:10}
+#left{top:12px;left:12px;width:330px;max-height:calc(100% - 230px);display:flex;flex-direction:column;overflow:hidden}
+#left .head{padding:12px 14px 8px}
+h1{font-size:15px;margin:0 0 2px;letter-spacing:.2px}h1 b{color:var(--acc2)}
+.sub{font-size:11.5px;color:var(--mute);line-height:1.35}
+.tabs{display:flex;gap:4px;margin-top:10px;background:#111713;border-radius:10px;padding:3px}
+.tabs button{flex:1;border:0;background:transparent;color:#aab5ae;padding:7px 4px;border-radius:8px;font-size:12.5px}
+.tabs button.on{background:#2f6b3a;color:#fff}
+.body{overflow:auto;padding:4px 14px 14px;flex:1}
+.body::-webkit-scrollbar{width:6px}.body::-webkit-scrollbar-thumb{background:#3a463f;border-radius:6px}
+h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mute);margin:12px 0 7px;font-weight:600}
+button{font:inherit;font-size:12.5px;font-weight:600;color:var(--txt);background:#26302b;border:1px solid #37433c;border-radius:9px;padding:8px 8px;cursor:pointer;transition:background .15s,border-color .15s,transform .05s;text-align:center;line-height:1.2}
+button:hover{background:#2f3b35;border-color:#4d5d53}button:active{transform:translateY(1px)}
+button.pri{background:#2f6b3a;border-color:#3f8a4c}button.pri:hover{background:#387d45}
+button.on{background:#7a5a17;border-color:#b58624}
+button.hold{background:#3b3322;border-color:#6f5a2c}button.hold.pressed{background:#b58624;color:#1b1406}
+button.dis{opacity:.45}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.wide{grid-column:1/-1}
+kbd{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;background:#111713;border:1px solid #3a463f;border-bottom-width:2px;border-radius:4px;padding:0 4px;color:#cbd6cf;margin-left:3px}
+/* guía */
+.gstep{font-size:11px;color:var(--acc2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.gtitle{font-size:17px;font-weight:700;margin:4px 0 6px;line-height:1.25}
+.gtext{font-size:13px;line-height:1.5;color:#d3dbd6}
+.gtext b{color:#fff}
+.gwhy{margin-top:10px;font-size:12px;line-height:1.45;color:#aebbb3;background:rgba(255,255,255,.04);border-left:3px solid var(--acc);padding:8px 10px;border-radius:6px}
+.gact{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.gact button{flex:1 1 45%}
+.gnav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:6px}
+.gnav button{padding:6px 10px;font-size:12px}
+.dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;flex:1}.dots i{width:7px;height:7px;border-radius:50%;background:#3a463f}.dots i.d{background:#4d8f59}.dots i.n{background:var(--acc2);box-shadow:0 0 0 3px rgba(143,212,154,.25)}
+.gok{color:#8fe19b;font-weight:700;font-size:13px;margin-top:8px;display:none}
+.prog{height:7px;border-radius:5px;background:#2a332e;overflow:hidden;margin-top:10px;display:none}.prog b{display:block;height:100%;width:0;background:linear-gradient(90deg,#d6a72c,#63b870);transition:width .2s}
+/* manual */
+details{border:1px solid var(--line);border-radius:10px;margin:7px 0;background:rgba(255,255,255,.02)}
+summary{cursor:pointer;padding:9px 11px;font-size:13px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";color:var(--mute)}details[open] summary::after{content:"–"}
+details .in{padding:0 11px 11px;font-size:12.3px;line-height:1.5;color:#cfd8d2}
+details .in p{margin:6px 0}details .in ol,details .in ul{margin:6px 0;padding-left:18px}
+details .in button{margin-top:6px;padding:5px 10px;font-size:11.5px}
+table.bom{width:100%;border-collapse:collapse;font-size:11.2px}table.bom td,table.bom th{border-bottom:1px solid var(--line);padding:4px 3px;text-align:left;vertical-align:top}table.bom th{color:var(--mute);font-weight:600}
+/* estado */
+#right{top:12px;right:12px;width:262px;padding:10px 13px}
+#right .ttl{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);cursor:pointer;margin-bottom:6px}
+.st{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12.2px;align-items:center}
+.st .k{color:var(--mute)}.st .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.pill{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.p-ok{background:rgba(95,196,110,.18);color:#8fe19b}.p-bad{background:rgba(229,83,61,.2);color:#ff9d8c}.p-warn{background:rgba(240,180,60,.2);color:#ffd27a}.p-mid{background:rgba(255,255,255,.08);color:#dfe6e1}
+.bar{height:9px;border-radius:6px;background:linear-gradient(90deg,#3f9a4c 0 58.3%,#d6a72c 58.3% 85%,#d2412f 85% 100%);position:relative;margin:8px 0 2px}
+.bar i{position:absolute;top:-3px;width:3px;height:15px;background:#fff;border-radius:2px;box-shadow:0 0 0 1px #000a;transform:translateX(-50%)}
+.meter{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--mute)}.meter .m{flex:1;height:6px;border-radius:4px;background:#2a332e;overflow:hidden}.meter .m b{display:block;height:100%;width:0;background:var(--acc)}
+#right.min .st,#right.min .xtra{display:none}
+/* barra inferior siempre visible */
+#bar{left:50%;transform:translateX(-50%);bottom:12px;display:flex;align-items:center;gap:14px;padding:9px 14px;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center}
+.sl{display:flex;flex-direction:column;gap:2px;min-width:170px}
+.sl label{font-size:11px;color:var(--mute);display:flex;justify-content:space-between}.sl label b{color:#e8ece9}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.cams{display:flex;gap:4px;flex-wrap:wrap}.cams button{font-size:11.5px;padding:6px 8px}
+.tg{display:flex;gap:4px}.tg button{font-size:11.5px;padding:6px 8px}
+#tip{position:fixed;z-index:30;pointer-events:none;max-width:310px;background:rgba(10,14,12,.95);border:1px solid rgba(99,184,112,.5);border-radius:10px;padding:10px 12px;font-size:12.3px;line-height:1.45;color:#dbe3de;display:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#tip b{display:block;color:var(--acc2);font-size:13px;margin-bottom:3px}#tip .mat{display:block;color:#b8c4bc;font-size:11px;margin-bottom:5px;font-style:italic}#tip .act{display:block;margin-top:6px;color:#ffd27a;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+#toasts{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+.toast{background:rgba(14,18,16,.94);border:1px solid #3c4a42;border-left:4px solid var(--acc);color:#e8ece9;border-radius:9px;padding:9px 14px;font-size:13px;max-width:520px;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:tin .2s ease-out}
+.toast.warn{border-left-color:var(--warn)}.toast.bad{border-left-color:var(--bad)}
+@keyframes tin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
+#dims{left:12px;bottom:12px;padding:9px 12px;font-size:11.5px;line-height:1.5;width:250px}#dims b{color:var(--acc2);font-size:11px;letter-spacing:1px;text-transform:uppercase}#dims .r{display:flex;justify-content:space-between;gap:8px}#dims .r span:first-child{color:var(--mute)}#dims .r span:last-child{font-weight:600;text-align:right}
+#detail{position:absolute;right:12px;bottom:84px;width:300px;padding:12px 14px;display:none}
+#detail b{color:var(--acc2);font-size:14px}#detail .mat{font-size:11.5px;color:#b8c4bc;font-style:italic;margin:3px 0 6px}#detail p{font-size:12.5px;line-height:1.45;margin:0;color:#d3dbd6}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);z-index:100;color:#2c3a31;font-size:14px;transition:opacity .5s}
+#loading .sp{width:38px;height:38px;border:4px solid #b9c2bb;border-top-color:#2f6b3a;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ptinfo{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 14px;font-size:12.5px;display:none}
+#mbar,.mclose,#bMore{display:none}
+.phead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+@media (max-width:900px){
+  #mbar{display:flex;position:fixed;top:8px;left:8px;right:8px;z-index:30;gap:6px;justify-content:center}
+  #mbar button{flex:1;font-size:12.5px;padding:8px 6px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:10px}
+  #mbar button.on{background:#2f6b3a;border-color:#3f8a4c}
+  #left,#right,#dims{display:none}
+  #left.open,#right.open,#dims.open{display:flex;flex-direction:column;position:fixed;top:52px;left:8px;right:8px;width:auto;bottom:auto;max-height:calc(100% - 52px - 96px);overflow:auto;z-index:25}
+  #right.open,#dims.open{display:block}
+  #left .sub{display:none}#left .head{padding:9px 12px 6px}
+  .mclose{display:inline-block;flex:0 0 auto;padding:3px 9px;font-size:13px;line-height:1.2}
+  #right .st{grid-template-columns:auto 1fr;font-size:12px}#right .xtra,#right .hide-m{display:revert}#right.min .st,#right.min .xtra{display:revert}
+  #right .ttl{cursor:default}#rTg{display:none}
+  #bar{left:8px;right:8px;transform:none;bottom:8px;gap:6px 8px;padding:8px 10px;justify-content:space-between}
+  #bar .cams,#bar .tg{display:none;width:100%}#bar.more .cams,#bar.more .tg{display:flex}
+  .cams{flex-wrap:wrap}.cams button{flex:1 1 30%}.tg button{flex:1}
+  .sl{min-width:0;flex:1 1 38%}#bMore{display:block;flex:0 0 auto;padding:7px 9px;font-size:12px}
+  #detail{left:8px;right:8px;width:auto;bottom:auto;top:52px;max-height:45%;overflow:auto;z-index:26}
+  #toasts{top:56px;width:calc(100% - 16px)}.toast{font-size:12px;padding:7px 10px}
+  #tip{max-width:78vw;font-size:11.5px}
+  .gtitle{font-size:15px}.gtext{font-size:12.3px}
+}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="loading"><div><div class="sp"></div>Armando el prototipo y sus mecanismos…</div></div>
+<canvas id="c"></canvas>
+
+<div id="mbar"><button data-open="left">☰ Menú</button><button data-open="right">Estado</button><button data-open="dims">Medidas</button></div>
+<div id="left" class="panel">
+  <div class="head">
+    <div class="phead"><h1><b>RECOEVO</b> · Triturador analógico a pedal</h1><button class="mclose" data-close="left">✕</button></div>
+    <div class="sub">Sin motor ni electrónica · 38 × 40 × 68 cm · cajón de 20 L. Todo se mueve con física real: pesos, resortes, inercia y choques.</div>
+    <div class="tabs"><button data-mode="manual" class="on">Manual</button><button data-mode="free">Libre</button></div>
+  </div>
+  <div class="body" id="pFree" style="display:none">
+    <h2>Tapa superior</h2>
+    <div class="grid">
+      <button id="bLatch">Gancho <kbd>G</kbd></button>
+      <button id="bLid">Tapa <kbd>T</kbd></button>
+      <button id="bWaste" class="pri wide">Echar residuos del día · 460 g <kbd>R</kbd></button>
+    </div>
+    <h2>Pedales</h2>
+    <div class="grid">
+      <button id="bPedR" class="hold">Pedal derecho<br><small>mantener · triturar</small> <kbd>Espacio</kbd></button>
+      <button id="bPedL" class="hold">Pedal izquierdo<br><small>mantener · aserrín</small> <kbd>C</kbd></button>
+      <button id="bAuto" class="wide">Pedaleo rítmico automático <kbd>P</kbd></button>
+    </div>
+    <h2>Frente, cajón y bolsa</h2>
+    <div class="grid">
+      <button id="bDoor">Puerta frontal <kbd>F</kbd></button>
+      <button id="bDrawer">Cajón <kbd>D</kbd></button>
+      <button id="bBag" class="wide">Sacar la bolsa llena</button>
+      <button id="bKey" class="wide" title="El operario de la ruta puede abrir el frente antes de tiempo, por ejemplo si se rompió la bolsa">Llave del operario (abre sin esperar el rojo)</button>
+    </div>
+    <h2>Simulación</h2>
+    <div class="grid"><button id="bDays">+ 5 días de uso (2,3 kg)</button><button id="bReset">Reiniciar</button></div>
+    <p class="sub" style="margin-top:10px">También puedes <b>arrastrar</b> las piezas con el mouse (tapa, gancho, puerta, cajón, bolsa), <b>mantener presionados</b> los pedales o hacer <b>doble clic</b> para abrir y cerrar.</p>
+  </div>
+  <div class="body" id="pManual"></div>
+</div>
+
+<div id="right" class="panel">
+  <div class="ttl" id="rTtl"><span>Estado en vivo</span><span id="rTg">–</span><button class="mclose" data-close="right">✕</button></div>
+  <div class="st">
+    <span class="k">Tapa</span><span class="v" id="oLid">—</span>
+    <span class="k">Empaque EPDM</span><span class="v" id="oSeal">—</span>
+    <span class="k">Seguro del pedal</span><span class="v" id="oLock">—</span>
+    <span class="k hide-m">Pedal derecho</span><span class="v hide-m" id="oPedR">—</span>
+    <span class="k hide-m">Volante</span><span class="v hide-m" id="oFly">—</span>
+    <span class="k">Rodillos</span><span class="v" id="oRoll">—</span>
+    <span class="k hide-m">Residuo por moler</span><span class="v hide-m" id="oRaw">—</span>
+    <span class="k">Aserrín en depósito</span><span class="v" id="oGate">—</span>
+    <span class="k hide-m">Montón cubierto</span><span class="v hide-m" id="oOnGate">—</span>
+    <span class="k">Cajón</span><span class="v" id="oBin">—</span>
+    <span class="k">Puerta frontal</span><span class="v" id="oDoor">—</span>
+  </div>
+  <div class="xtra">
+    <div class="bar"><i id="oNeedle" style="left:0%"></i></div>
+    <div class="meter" style="justify-content:space-between"><span>0 kg</span><span>7</span><span>10,2 · rojo</span><span>12 kg</span></div>
+    <div class="meter" style="margin-top:8px"><span style="width:92px">Energía volante</span><div class="m"><b id="oE"></b></div></div>
+    <div class="meter" style="margin-top:5px"><span style="width:92px">Carga de molido</span><div class="m"><b id="oLoad" style="background:#d6a72c"></b></div></div>
+  </div>
+</div>
+
+<div id="bar" class="panel">
+  <div class="sl"><label for="sTrans">Traslucidez <b id="vTrans">45%</b></label><input type="range" id="sTrans" min="0" max="100" value="45"></div>
+  <div class="sl"><label for="sExp">Despiece (separar piezas) <b id="vExp">0%</b></label><input type="range" id="sExp" min="0" max="100" value="0"></div>
+  <button id="bMore">Vistas ▾</button>
+  <div class="cams">
+    <button data-cam="gen">General</button><button data-cam="front">Frente</button><button data-cam="mech">Transmisión</button><button data-cam="grind">Rodillos</button><button data-cam="scale">Báscula</button><button data-cam="drawer">Cajón</button>
+  </div>
+  <div class="tg"><button id="bOdor">Olor y sellos</button><button id="bSound" class="on">Sonido</button></div>
+</div>
+
+<div id="dims" class="panel"></div>
+<div id="detail" class="panel"></div>
+<div id="tip"></div>
+<div id="toasts"></div>
